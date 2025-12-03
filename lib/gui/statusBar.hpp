@@ -3,6 +3,7 @@
 #include "globalGuiDef.h"
 
 #include "gps.hpp"
+#include "storage.hpp"
 
 extern lv_obj_t *latLabel;
 extern lv_obj_t *lonLabel;

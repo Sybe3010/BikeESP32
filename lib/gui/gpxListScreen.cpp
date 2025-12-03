@@ -1,0 +1,52 @@
+#include "gpxListScreen.hpp"
+
+GpxParser gpxList;
+
+lv_obj_t *gpxListScreen;
+
+void gpxListEvent(lv_event_t* e){
+    lv_event_code_t code = lv_event_get_code(e);
+    lv_obj_t *obj = (lv_obj_t *)lv_event_get_current_target(e);
+    uint32_t row;
+    uint32_t col;
+}
+
+void makeGpxListScreen(){
+    gpxListScreen = lv_table_create(NULL);
+    lv_obj_set_size(gpxListScreen, 320, 455);
+    lv_obj_set_pos(gpxListScreen, 0, 25);
+    lv_table_set_column_count(gpxListScreen, 1);
+
+    lv_table_set_cell_value(gpxListScreen, 0, 0, "GPX Files:");
+    lv_table_set_column_width(gpxListScreen, 0, 320);
+
+    lv_obj_add_event_cb(gpxListScreen, gpxListEvent, LV_EVENT_ALL, NULL);
+
+    lv_obj_set_style_pad_ver(gpxListScreen, 15, LV_PART_ITEMS);
+    lv_obj_set_style_border_width(gpxListScreen, 1, LV_PART_ITEMS);
+    lv_obj_set_style_border_color(gpxListScreen, lv_color_hex(0x303030), LV_PART_ITEMS);
+    lv_obj_set_style_border_side(gpxListScreen, LV_BORDER_SIDE_BOTTOM, LV_PART_ITEMS | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(gpxListScreen, lv_color_hex(0x303030), LV_PART_ITEMS | LV_STATE_PRESSED);
+    lv_obj_set_style_bg_opa(gpxListScreen, LV_OPA_100, LV_PART_ITEMS | LV_STATE_PRESSED);
+}
+
+void updateGpxListScreen(){
+    uint16_t totalGpx = 1;
+        std::map<std::string, std::vector<std::string>> tracksByFile = GpxParser::getTagElementList(gpxTrackTag, gpxNameElem, trkFolder);
+
+        for (std::map<std::string, std::vector<std::string>>::const_iterator it = tracksByFile.begin(); it != tracksByFile.end(); ++it)
+        {
+            const std::string& fileName = it->first;
+            const std::vector<std::string>& trackNames = it->second;
+
+            for (const std::string& trackName : trackNames)
+            {
+                lv_table_set_cell_value_fmt(gpxListScreen, totalGpx, 0, LV_SYMBOL_SHUFFLE " - %s", trackName.c_str());
+                lv_table_set_cell_value_fmt(gpxListScreen, totalGpx, 1, "%s", fileName.c_str());
+                totalGpx++;
+            }
+        }
+}
+
+
+

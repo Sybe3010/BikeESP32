@@ -28,13 +28,13 @@ lv_obj_t *activityOptionBtn;
 lv_obj_t *touchscreenOptionBtn;
 
 void navBtnEvent(lv_event_t * e){
-    lv_screen_load(mapScreen);
+    lv_screen_load(navigationMenuScreen);
 }
 void optionsBtnEvent(lv_event_t * e){
-    lv_tileview_set_tile(homeScreenTiles, settingTile, LV_ANIM_OFF);
+    lv_tileview_set_tile(homeScreenTiles, optionsTile, LV_ANIM_ON);
 }
 void settingsBtnEvent(lv_event_t * e){
-    lv_tileview_set_tile(homeScreenTiles, settingTile, LV_ANIM_OFF);
+    lv_tileview_set_tile(homeScreenTiles, settingTile, LV_ANIM_ON);
 }
 
 void backBtnEvent(lv_event_t * e){
@@ -89,21 +89,21 @@ void makeHomeScreen(){
     lv_obj_set_pos(activityTiles, 10, 10);
     
     //Maak activity tiles inhoud
-    roadActivityBtn = lv_btn_create(roadActivityTile);
+    roadActivityBtn = lv_button_create(roadActivityTile);
     lv_obj_set_size(roadActivityBtn, 300, 188);
     lv_obj_set_pos(roadActivityBtn, 0, 0);
     lv_obj_t* roadLabel = lv_label_create(roadActivityBtn);
     lv_label_set_text(roadLabel, "Road");
     lv_obj_set_pos(roadLabel, 10, 30);
 
-    gravelActivityBtn = lv_btn_create(gravelActivityTile);
+    gravelActivityBtn = lv_button_create(gravelActivityTile);
     lv_obj_set_size(gravelActivityBtn, 300, 188);
     lv_obj_set_pos(gravelActivityBtn, 0, 0);
     lv_obj_t* gravelLabel = lv_label_create(gravelActivityBtn);
     lv_label_set_text(gravelLabel, "Gravel");
     lv_obj_set_pos(gravelLabel, 10, 30);
 
-    mtbActivityBtn = lv_btn_create(mtbActivityTile);
+    mtbActivityBtn = lv_button_create(mtbActivityTile);
     lv_obj_set_size(mtbActivityBtn, 300, 188);
     lv_obj_set_pos(mtbActivityBtn, 0, 0);
     lv_obj_t* mtbLabel = lv_label_create(mtbActivityBtn);
@@ -111,15 +111,15 @@ void makeHomeScreen(){
     lv_obj_set_pos(mtbLabel, 10, 30);
 
     // Add homeScreen buttons
-    navigationButton = lv_btn_create(homeTile);
+    navigationButton = lv_button_create(homeTile);
     lv_obj_set_size(navigationButton, 75, 75);
     lv_obj_set_pos(navigationButton, 32, 308);
 
-    optionsButton = lv_btn_create(homeTile);
+    optionsButton = lv_button_create(homeTile);
     lv_obj_set_size(optionsButton, 75, 75);
     lv_obj_set_pos(optionsButton, 123, 308);
     
-    settingsButton = lv_btn_create(homeTile);
+    settingsButton = lv_button_create(homeTile);
     lv_obj_set_size(settingsButton, 75, 75);
     lv_obj_set_pos(settingsButton, 214, 308);
 
@@ -148,19 +148,19 @@ void makeHomeScreen(){
     lv_label_set_text(settingTitle, "Settings");
     lv_obj_set_pos(settingTitle, 32, 25);
 
-    backButton = lv_btn_create(settingTile);
+    backButton = lv_button_create(settingTile);
     lv_obj_set_size(backButton, 96, 96);
     lv_obj_set_pos(backButton, 32, 92);
 
-    accountButton = lv_btn_create(settingTile);
+    accountButton = lv_button_create(settingTile);
     lv_obj_set_size(accountButton, 96, 96);
     lv_obj_set_pos(accountButton, 172, 92);
 
-    bluetoothButton = lv_btn_create(settingTile);
+    bluetoothButton = lv_button_create(settingTile);
     lv_obj_set_size(bluetoothButton, 96, 96);
     lv_obj_set_pos(bluetoothButton, 172, 262);
 
-    moreSettingsButton = lv_btn_create(settingTile);
+    moreSettingsButton = lv_button_create(settingTile);
     lv_obj_set_size(moreSettingsButton, 96, 96);
     lv_obj_set_pos(moreSettingsButton, 32, 262);
 
@@ -189,35 +189,35 @@ void makeHomeScreen(){
     lv_label_set_text(optionsTitle, "Options");
     lv_obj_set_pos(optionsTitle, 32, 25);
 
-    brightnessOptionBtn = lv_btn_create(optionsTile);
-    lv_obj_set_size(brightnessOptionBtn, 96, 96);
+    brightnessOptionBtn = lv_button_create(optionsTile);
+    lv_obj_set_size(brightnessOptionBtn, 256, 96);
     lv_obj_set_pos(brightnessOptionBtn, 32, 70);
 
-    mapOptionBtn = lv_btn_create(optionsTile);
-    lv_obj_set_size(mapOptionBtn, 96, 96);
-    lv_obj_set_pos(mapOptionBtn, 32, 110);
+    mapOptionBtn = lv_button_create(optionsTile);
+    lv_obj_set_size(mapOptionBtn, 256, 96);
+    lv_obj_set_pos(mapOptionBtn, 32, 176);
 
-    activityOptionBtn = lv_btn_create(optionsTile);
-    lv_obj_set_size(activityOptionBtn, 96, 96);
-    lv_obj_set_pos(activityOptionBtn, 32, 150);
+    activityOptionBtn = lv_button_create(optionsTile);
+    lv_obj_set_size(activityOptionBtn, 256, 96);
+    lv_obj_set_pos(activityOptionBtn, 32, 282);
 
-    touchscreenOptionBtn = lv_btn_create(optionsTile);
-    lv_obj_set_size(touchscreenOptionBtn, 96, 96);
-    lv_obj_set_pos(touchscreenOptionBtn, 32, 190);
+    touchscreenOptionBtn = lv_button_create(optionsTile);
+    lv_obj_set_size(touchscreenOptionBtn, 256, 96);
+    lv_obj_set_pos(touchscreenOptionBtn, 32, 388);
 
     //Labels voor options buttons
     lv_obj_t* brightnessLabel = lv_label_create(brightnessOptionBtn);
     lv_label_set_text(brightnessLabel, "Brightness settings");
-    lv_obj_set_pos(brightnessLabel,  140, 100);
+    lv_obj_set_pos(brightnessLabel,  30, 20);
     lv_obj_t* mapLabel = lv_label_create(mapOptionBtn);
     lv_label_set_text(mapLabel, "Map settings");
-    lv_obj_set_pos(mapLabel,  140, 140);
+    lv_obj_set_pos(mapLabel,  30, 20);
     lv_obj_t* activityLabel = lv_label_create(activityOptionBtn);
     lv_label_set_text(activityLabel, "Activity settings");
-    lv_obj_set_pos(activityLabel,  140, 180);
+    lv_obj_set_pos(activityLabel,  30, 20);
     lv_obj_t* touchscreenLabel = lv_label_create(touchscreenOptionBtn);
     lv_label_set_text(touchscreenLabel, "Touchscreen calibration");
-    lv_obj_set_pos(touchscreenLabel,  140, 220);
+    lv_obj_set_pos(touchscreenLabel,  30, 20);
 
     // Events voor options buttons
     lv_obj_add_event_cb(brightnessOptionBtn, brightnessOptionBtnEvent, LV_EVENT_CLICKED, NULL);

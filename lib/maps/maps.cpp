@@ -215,7 +215,7 @@ void Maps::displayMap(){
 
     uint16_t mapHeading = 0;
 
-    mapHeading = 0;//gps.gpsData.heading;
+    mapHeading = gps.gpsData.heading;
 
     const uint16_t size = Maps::mapTileSize;
 
@@ -223,9 +223,25 @@ void Maps::displayMap(){
         const float lat = gps.gpsData.latitude;    //51.252376;
         const float lon = gps.gpsData.longitude;   //4.438024;
         Maps::navArrowPosition = Maps::coord2ScreenPos(lon, lat, Maps::zoomLevel, Maps::mapTileSize);
-        Maps::mapTempSprite.setPivot(Maps::mapTileSize + Maps::navArrowPosition.posX,
+        if(Maps::zoomLevel >= 15){
+            Maps::mapTempSprite.fillCircle(Maps::mapTileSize + Maps::navArrowPosition.posX,
+                                        Maps::mapTileSize + Maps::navArrowPosition.posY,
+                                         7, TFT_RED);
+        }
+        else {
+            Maps::mapTempSprite.fillCircle(Maps::mapTileSize + Maps::navArrowPosition.posX,
+                                        Maps::mapTileSize + Maps::navArrowPosition.posY,
+                                         4, TFT_RED);
+        }
+        if(Maps::turnOnGpsHeading){
+            Maps::mapTempSprite.setPivot(Maps::mapTileSize + Maps::navArrowPosition.posX,
                                      Maps::mapTileSize + Maps::navArrowPosition.posY);
-        Maps::mapTempSprite.pushRotated(&mapSprite, 360 - mapHeading);
+            Maps::mapTempSprite.pushRotated(&mapSprite, 360 - mapHeading);
+        } else {
+            Maps::mapTempSprite.setPivot(Maps::mapTileSize + Maps::navArrowPosition.posX,
+                                     Maps::mapTileSize + Maps::navArrowPosition.posY);
+            Maps::mapTempSprite.pushRotated(&mapSprite, 0);
+        };
     }
 }   
 

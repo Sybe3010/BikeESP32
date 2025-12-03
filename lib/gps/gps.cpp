@@ -7,15 +7,11 @@ void GPS::begin(unsigned long baud)
     // gebruik de meegegeven baud-parameter
     Serial2.begin(baud, SERIAL_8N1, GPS_SERIAL_RX_PIN, GPS_SERIAL_TX_PIN);
 
-    #ifdef GPS_SIMULATOR
-        simulateGPS = true;
-    #else
-        simulateGPS = false;
-    #endif
+    simulateGPS = false; // Zet simulatie uit bij begin
 }
 
 GPS::GPSData GPS::getAllData(){
-    if(simulateGPS && gps.satellites.value() < 5 || gps.location.isValid() == false){
+    if(simulateGPS){
         // Simuleer GPS-gegevens als er geen echte GPS-gegevens zijn  51.248304, 4.487703
         GPSData data;
         data.latitude = 51.248304;   // Simuleer breedtegraad (Sint-Jozefinstituut Schoten)
@@ -45,5 +41,9 @@ GPS::GPSData GPS::getAllData(){
 
         return data;
     }
+}
+
+
+GPS::GPSData GPS::SimulateByGPXTrack(){
     
 }

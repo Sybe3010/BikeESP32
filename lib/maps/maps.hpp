@@ -86,6 +86,7 @@ class Maps {
         uint16_t mapScrHeight = 320;                                         /**< Screen map size height */
         uint16_t mapScrWidth = 455;   
         void* mapBuffer;   
+        bool turnOnGpsHeading = false;                             /**< Flag to indicate if map rotate with GPS heading */
 
         Maps();
         MapTile getMapTile(float lon, float lat, uint8_t zoomLevel, int8_t offsetX, int8_t offsetY);

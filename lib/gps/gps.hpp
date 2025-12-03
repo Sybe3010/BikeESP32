@@ -27,7 +27,5 @@ class GPS
         GPS();
         void begin(unsigned long baud);
         GPSData getAllData();
-        GPSData SimulateGPSData();
         GPSData SimulateByGPXTrack();
-        GPSData SimulateByFile();
 };

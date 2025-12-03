@@ -9,6 +9,8 @@ lv_obj_t *lonLabel;
 lv_obj_t *sattLabel;
 lv_obj_t *sdCardIcon;
 
+Storage storage;
+
 GPS gps = GPS();
 
 void latLabelChange(const char* latText){
@@ -40,7 +42,12 @@ void makeStatusBar(){
     lv_obj_set_pos(sattLabel, 240, 0); 
 
     sdCardIcon = lv_label_create(statusBar);
-    lv_label_set_text(sdCardIcon, LV_SYMBOL_SD_CARD);
+    if(storage.getSdLoaded()){
+        lv_label_set_text(sdCardIcon, LV_SYMBOL_SD_CARD);
+    } else {
+        lv_label_set_text(sdCardIcon, LV_SYMBOL_WARNING);
+    }
+    
     lv_obj_set_pos(sdCardIcon, 290, 0);
 
 
@@ -68,10 +75,3 @@ void updateGPSTask(lv_timer_t * timer){
     sattLabelChange(String("Satt: " + String(gps.gpsData.satellites)).c_str());
 }
 
-void sdLabelChange(bool sdCardAvailable){
-    if(sdCardAvailable){
-        lv_label_set_text(sdCardIcon, LV_SYMBOL_SD_CARD);
-    } else {
-        lv_label_set_text(sdCardIcon, LV_SYMBOL_WARNING);
-    }
-}

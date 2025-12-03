@@ -9,8 +9,11 @@ extern lv_obj_t *homeScreen;
 extern lv_obj_t *homeScreenTiles;
 
 // Navigation Menu object
-extern lv_obj_t *navMenuScreen;
+extern lv_obj_t *navigationMenuScreen;
 extern lv_obj_t *statusBar;
 extern lv_obj_t *mapScreen;
+
+extern lv_obj_t *gpxListScreen;
+
 
 extern lv_timer_t *gpsTimer;

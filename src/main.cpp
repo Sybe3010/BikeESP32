@@ -2,17 +2,22 @@
 
 #include "esp_err.h"
 
-#include <SD.h>
+#include "storage.hpp"
 
 #include "tft.hpp"
 #include "homeScreen.hpp"
 #include "mapScreen.hpp"
 #include "statusBar.hpp"
+#include "navigationMenuScreen.hpp"
+#include "gpxListScreen.hpp"
 #include "gps.hpp"
 #include "maps.hpp"
 
+#include "activity.hpp"
+
 extern GPS gps;
 extern Maps maps;
+extern Storage storage;
 
 
 void setup() {
@@ -20,26 +25,28 @@ void setup() {
 
   gps.begin(9600);
 
-  pinMode(GPIO_NUM_15, OUTPUT);
-  digitalWrite(GPIO_NUM_15, LOW);
-
-  SPI.begin(GPIO_NUM_12, GPIO_NUM_13, GPIO_NUM_11);
-
-  if(!SD.begin(GPIO_NUM_15, SPI, 20000000, "/sdcard")){
-    sdCardAvailable = false;
-  } else {
-    sdCardAvailable = true;
-  }
+  storage.initSD();
+  storage.initSPIFFS();
 
   initTFT();
+
+  if(!storage.exists("/sdcard/TRK")){
+    if(!storage.mkdir("/sdcard/TRK")){
+      tft.fillScreen(TFT_RED);
+    }
+  }
+  
   initLVGL();
 
   makeHomeScreen();
   makeMapScreen();
+  makeNavigationMenuScreen();
+  makeGpxListScreen();
 
   lv_screen_load(homeScreen);
   makeStatusBar();
-  sdLabelChange(sdCardAvailable);
+
+  updateGpxListScreen();
 }
 
 void loop() {
@@ -47,3 +54,18 @@ void loop() {
   lv_timer_handler();
   delay(5);
 }
+
+
+  // Maak een ActivityPoint aan en vul met gegevens
+  // Activity::ActivityPoint ap = {
+  //   .lon = 4.438024f,
+  //   .lat = 51.252376f,
+  //   .speed = 15.5f,
+  //   .ele = 10.0f,
+  //   .cadance = 85,
+  //   .hartrate = 120,
+  //   .power = 200
+  // };
+
+  // testAct.startActivity();
+  // testAct.addActivityPoint(ap);
