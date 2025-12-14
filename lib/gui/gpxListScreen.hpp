@@ -1,11 +1,13 @@
 #pragma once
 
 #include "globalGuiDef.h"
-#include "gpx.hpp"
+#include "gpxDetailScreen.hpp"
 
-extern GpxParser gpxList;
+extern String gpxFileFolder;
 
 void gpxListEvent(lv_event_t* e);
+// void gxpListScreenBackSwipeEvent(lv_event_t *e);
 
 void makeGpxListScreen();
+void viewOptions();
 void updateGpxListScreen();

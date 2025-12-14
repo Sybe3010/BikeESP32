@@ -15,5 +15,7 @@ extern lv_obj_t *mapScreen;
 
 extern lv_obj_t *gpxListScreen;
 
+extern lv_obj_t *gpxDetailsScreen;
+
 
 extern lv_timer_t *gpsTimer;

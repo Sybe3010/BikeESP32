@@ -31,13 +31,28 @@ class GpxParser {
         static std::map<std::string, std::vector<std::string>> getTagElementList(const char* tag, const char* element, const std::string& folderPath);
 
         bool loadTrack();
-        bool getElevationData();
-
         bool getWaypoints();
         bool getDefaultWaypoints();
+
+        float trackLenght;
+        float totalAscent;
+        float totalDescent;
+        
+        std::vector<wayPoint> trackData;
+        
+        std::vector<wayPoint> defaultWaypoints;
+
+        std::vector<elevationData> elevationProfile;
+        std::vector<ClimbSegment> climbs;
+
+    private:
+        void getElevationProfile();
+        void detectClimbs();
+        void getTrackLenght();
+        float getDistance(float lon1, float lat1, float lon2, float lat2, float h1, float h2);
+        
+        //Voor climbdetails leg climbs en elvationProfile over elkaar.
         
         std::string _filePath;
-        std::vector<wayPoint> trackData;
-        std::vector<elevationData> elevationProfile;
-        std::vector<wayPoint> defaultWaypoints;
+        
 };

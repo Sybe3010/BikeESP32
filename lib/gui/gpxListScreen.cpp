@@ -1,7 +1,5 @@
 #include "gpxListScreen.hpp"
 
-GpxParser gpxList;
-
 lv_obj_t *gpxListScreen;
 
 void gpxListEvent(lv_event_t* e){
@@ -9,16 +7,34 @@ void gpxListEvent(lv_event_t* e){
     lv_obj_t *obj = (lv_obj_t *)lv_event_get_current_target(e);
     uint32_t row;
     uint32_t col;
+    if(code == LV_EVENT_CLICKED){
+        lv_table_get_selected_cell(obj, &row, &col);
+        if(row != 0){
+            String sel = String(lv_table_get_cell_value(obj, row, col));
+            String gpxName = sel.substring(6,sel.length());
+            String gpxFile = String(lv_table_get_cell_value(obj, row, 1));
+
+            gpxFileFolder = String(trkFolder) + "/" + gpxFile;
+            fillGpxDetailsScreen();
+            lv_screen_load(gpxDetailsScreen); 
+        }
+    }
 }
+
+// void gxpListScreenBackSwipeEvent(lv_event_t *e){
+//     lv_screen_load(navigationMenuScreen);
+// }
 
 void makeGpxListScreen(){
     gpxListScreen = lv_table_create(NULL);
     lv_obj_set_size(gpxListScreen, 320, 455);
     lv_obj_set_pos(gpxListScreen, 0, 25);
-    lv_table_set_column_count(gpxListScreen, 1);
+    lv_table_set_column_count(gpxListScreen, 2);  // ← 2 kolommen (naam + bestand)
 
-    lv_table_set_cell_value(gpxListScreen, 0, 0, "GPX Files:");
-    lv_table_set_column_width(gpxListScreen, 0, 320);
+    lv_table_set_cell_value(gpxListScreen, 0, 0, "Track Name");
+    lv_table_set_cell_value(gpxListScreen, 0, 1, "File");
+    lv_table_set_column_width(gpxListScreen, 0, 160);
+    lv_table_set_column_width(gpxListScreen, 1, 160);
 
     lv_obj_add_event_cb(gpxListScreen, gpxListEvent, LV_EVENT_ALL, NULL);
 
@@ -28,6 +44,12 @@ void makeGpxListScreen(){
     lv_obj_set_style_border_side(gpxListScreen, LV_BORDER_SIDE_BOTTOM, LV_PART_ITEMS | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(gpxListScreen, lv_color_hex(0x303030), LV_PART_ITEMS | LV_STATE_PRESSED);
     lv_obj_set_style_bg_opa(gpxListScreen, LV_OPA_100, LV_PART_ITEMS | LV_STATE_PRESSED);
+
+    // lv_obj_add_event_cb(gpxListScreen, gxpListScreenBackSwipeEvent, LV_EVENT_GESTURE, NULL);
+}
+
+void viewOptions(){
+
 }
 
 void updateGpxListScreen(){

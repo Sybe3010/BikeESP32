@@ -12,6 +12,7 @@
 #include "gpxListScreen.hpp"
 #include "gps.hpp"
 #include "maps.hpp"
+#include "gpxDetailScreen.hpp"
 
 #include "activity.hpp"
 
@@ -42,6 +43,7 @@ void setup() {
   makeMapScreen();
   makeNavigationMenuScreen();
   makeGpxListScreen();
+  makeGpxDetailsScreen();
 
   lv_screen_load(homeScreen);
   makeStatusBar();

@@ -70,6 +70,18 @@ struct TurnPoint
     float angle;       /**< Turn angle at this point (positive = right, negative = left) */
     float distance;    /**< Distance from start to this point (in meters) */
 }; 
+/**
+ * @brief Climbsegment
+ *
+ * @details Structure representing a climb
+ */
+struct ClimbSegment{
+    size_t startIndex;
+    size_t endIndex;
+    float totalDistance;
+    float totalElevationGain;
+    float avgGrade;
+};
 
 /**
  * @Brief GPX header file format
