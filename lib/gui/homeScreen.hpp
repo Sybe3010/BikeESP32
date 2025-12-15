@@ -1,6 +1,6 @@
 #pragma once
 
-#include "globalGuiDef.h"
+#include "bluetoothScreen.hpp"
 #include "mapScreen.hpp"
 
 // Hoofd scherm tiles

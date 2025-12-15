@@ -13,6 +13,7 @@
 #include "gps.hpp"
 #include "maps.hpp"
 #include "gpxDetailScreen.hpp"
+#include "bluetoothScreen.hpp"
 
 #include "activity.hpp"
 
@@ -44,6 +45,7 @@ void setup() {
   makeNavigationMenuScreen();
   makeGpxListScreen();
   makeGpxDetailsScreen();
+  makeBleScreen();
 
   lv_screen_load(homeScreen);
   makeStatusBar();

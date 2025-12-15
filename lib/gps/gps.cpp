@@ -45,5 +45,6 @@ GPS::GPSData GPS::getAllData(){
 
 
 GPS::GPSData GPS::SimulateByGPXTrack(){
-    
+    GPS::GPSData data = {0};
+    return data;
 }

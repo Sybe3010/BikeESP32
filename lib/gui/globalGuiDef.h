@@ -17,5 +17,7 @@ extern lv_obj_t *gpxListScreen;
 
 extern lv_obj_t *gpxDetailsScreen;
 
+extern lv_obj_t *bleScreen;
+
 
 extern lv_timer_t *gpsTimer;

@@ -44,7 +44,8 @@ void accountBtnEvent(lv_event_t * e){
     // Account button event handler
 }
 void bluetoothBtnEvent(lv_event_t * e){
-    // Bluetooth button event handler
+    updateBleScreen();
+    lv_screen_load(bleScreen);
 }
 void moreSettingsBtnEvent(lv_event_t * e){
     // More Settings button event handler
