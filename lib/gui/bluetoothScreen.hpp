@@ -1,9 +1,11 @@
 #pragma once
 
-#include "globalGuiDef.h"
 #include "bluetooth.hpp"
+#include "globalGuiDef.h"
+
+extern BluetoothSearch bleSensors;
 
 void makeBleScreen();
 void updateBleScreen();
 
-void deviceClickEvent(lv_event_t *e);
+void bleDeviceEvent(lv_event_t *e);

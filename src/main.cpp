@@ -3,6 +3,7 @@
 #include "esp_err.h"
 
 #include "storage.hpp"
+#include "bluetooth.hpp"
 
 #include "tft.hpp"
 #include "homeScreen.hpp"
@@ -20,6 +21,7 @@
 extern GPS gps;
 extern Maps maps;
 extern Storage storage;
+extern BluetoothSearch bleSensors;
 
 
 void setup() {
@@ -31,6 +33,8 @@ void setup() {
   storage.initSPIFFS();
 
   initTFT();
+
+  bleSensors.init();
 
   if(!storage.exists("/sdcard/TRK")){
     if(!storage.mkdir("/sdcard/TRK")){
