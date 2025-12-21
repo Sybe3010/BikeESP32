@@ -26,7 +26,7 @@ extern BluetoothSearch bleSensors;
 
 void setup() {
   bool sdCardAvailable = false;
-
+  Serial.begin(9600);
   gps.begin(9600);
 
   storage.initSD();

@@ -1,10 +1,9 @@
 #include "bluetooth.hpp"
 
 BLEScan* bleScan;
-BLEAdvertisedDevice* heartRateDevice = nullptr;
-BLERemoteCharacteristic* heartRateCharacteristic = nullptr;
 
 std::vector<BluetoothSearch::FoundedDevice> BluetoothSearch::devices;
+
 
 class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks{
     private:
@@ -12,25 +11,12 @@ class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks{
     public:
         MyAdvertisedDeviceCallbacks(BluetoothSearch* owner) : _owner(owner){}
         void onResult(BLEAdvertisedDevice advertisedDevice) override {
-            // if(_owner->hasAServiceUUID(advertisedDevice, HR_SERVICE_UUID)
-            //     || _owner->hasAServiceUUID(advertisedDevice, CSC_SERVICE_UUID)
-            //     || _owner->hasAServiceUUID(advertisedDevice, POWER_SERVICE_UUID)){
-                
-            //     BluetoothSearch::FoundedDevice device;
+            BluetoothSearch::FoundedDevice sensor;
+            sensor.deviceMacAddress = advertisedDevice.getAddress().toString();;
+            sensor.serviceId = advertisedDevice.getServiceUUID();
+            sensor.name = advertisedDevice.getName();
 
-            //     device.deviceMacAddress = advertisedDevice.getAddress().toString();
-            //     device.serviceId = advertisedDevice.getServiceUUID();
-            //     device.name = advertisedDevice.getName();
-
-            //     _owner->devices.push_back(device);
-            // }
-            
-            BluetoothSearch::FoundedDevice device;
-            device.deviceMacAddress = advertisedDevice.getAddress().toString();
-            device.serviceId = advertisedDevice.getServiceUUID();
-            device.name = advertisedDevice.getName();
-
-            _owner->devices.push_back(device);
+            _owner->devices.push_back(sensor);
         }
 };
 
@@ -42,6 +28,8 @@ BluetoothSearch::BluetoothSearch(bool mode){
     bluetoothMode = mode;
 }
 
+
+
 bool BluetoothSearch::hasAServiceUUID(BLEAdvertisedDevice &device, BLEUUID uuid){
     return device.haveServiceUUID() && device.isAdvertisingService(uuid);
 }
@@ -51,6 +39,8 @@ void BluetoothSearch::init(){
     bleScan = BLEDevice::getScan();
     bleScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks(this));
     bleScan->setActiveScan(true); 
+    bleScan->setInterval(100);
+    bleScan->setWindow(99);
 
 }
  
@@ -62,17 +52,39 @@ void BluetoothSearch::scanAvailableDevices(){
 }
 
 
+///// BLE SENSOR CLASS METHODS //////
 
-BleSensor::BleSensor(BLEAdvertisedDevice* device){
-    sensor = device;
+BleSensor::BleSensor() {
+    sensor = nullptr;
+    sensorClient = nullptr;
+    connected = false;
+    heartRateBpm = 0;
+    powerWatts = 0;
+    cadenceRpm = 0;
+}
+
+BleSensor::BleSensor(std::string macAddress){
+    deviceMacAddress = macAddress;
+}   
+
+BleSensor::BleSensor(BLEAdvertisedDevice* device) {
+    _advertisedDevice = device;
+    deviceMacAddress = device->getAddress().toString();
 }
 
 bool BleSensor::connectSensor(){
     sensorClient = BLEDevice::createClient();
+    if (sensorClient == nullptr) return false;
+    log_e("Tying to connect to sensor %s", deviceMacAddress.c_str());
 
-    if(!sensorClient->connect(sensor)){
-        return false;
-    }
+    // if (_advertisedDevice != nullptr) {
+    //     if (!sensorClient->connect(_advertisedDevice)) {
+    //         return false;
+    //     }
+    // } else {
+        BLEAddress bleAddr("fc:78:4a:b3:1d:66");
+        if (!sensorClient->connect(bleAddr)) return false;
+    // }
 
     if(auto hr = sensorClient->getService(HR_SERVICE_UUID)){
         auto ch = hr->getCharacteristic(HR_CHAR_UUID);
@@ -141,11 +153,17 @@ void BleSensor::cadanceNotify(BLERemoteCharacteristic *pBLERemoteCharacteristic,
     lastCrankTime = crankTime;
     }
 }
-
-
 void BleSensor::powerNotify(BLERemoteCharacteristic *pBLERemoteCharacteristic, uint8_t *pData, size_t length, bool isNotify) {
     if (length >= 4) {
         powerWatts = pData[2] | (pData[3] << 8);
         Serial.printf("Vermogen: %d W\n", powerWatts);
     }
+}
+
+BLEClient* BleSensor::getClient(){
+    return sensorClient;
+}
+
+bool BleSensor::isConnected(){
+    return sensorClient->isConnected();
 }

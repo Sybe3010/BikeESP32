@@ -4,6 +4,9 @@
 #include "globalGuiDef.h"
 
 extern BluetoothSearch bleSensors;
+extern BLEScan* bleScan;    
+
+extern std::vector<ConnectedDevice> connectedDevices;
 
 void makeBleScreen();
 void updateBleScreen();
