@@ -21,7 +21,7 @@
 extern GPS gps;
 extern Maps maps;
 extern Storage storage;
-extern BluetoothSearch bleSensors;
+extern Bluetooth bleSensors;  
 
 
 void setup() {
@@ -55,6 +55,9 @@ void setup() {
   makeStatusBar();
 
   updateGpxListScreen();
+
+  bleSensors.startScan();
+  bleSensors.connectToDevice(bleSensors.targetDevice);
 }
 
 void loop() {

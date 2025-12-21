@@ -1,169 +1,78 @@
 #include "bluetooth.hpp"
 
-BLEScan* bleScan;
 
-std::vector<BluetoothSearch::FoundedDevice> BluetoothSearch::devices;
-
-
-class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks{
+/// Callbacks ///
+class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks {
     private:
-        BluetoothSearch* _owner;
+        Bluetooth* _bluetooth;
     public:
-        MyAdvertisedDeviceCallbacks(BluetoothSearch* owner) : _owner(owner){}
-        void onResult(BLEAdvertisedDevice advertisedDevice) override {
-            BluetoothSearch::FoundedDevice sensor;
-            sensor.deviceMacAddress = advertisedDevice.getAddress().toString();;
-            sensor.serviceId = advertisedDevice.getServiceUUID();
-            sensor.name = advertisedDevice.getName();
+        MyAdvertisedDeviceCallbacks(Bluetooth* bluetooth) : _bluetooth(bluetooth) {}
 
-            _owner->devices.push_back(sensor);
+        void onResult(BLEAdvertisedDevice advertisedDevice) override {
+            Serial.print("Found device: ");
+            Serial.println(advertisedDevice.toString().c_str());
+            if(advertisedDevice.haveServiceUUID() && advertisedDevice.isAdvertisingService(targetServiceUUID)) { // Replace with your target device name
+                _bluetooth->targetDevice = new BLEAdvertisedDevice(advertisedDevice);
+                Serial.println("Target device found!");
+            }
         }
 };
 
-BluetoothSearch::BluetoothSearch() {
-    bluetoothMode = false;
-}
+class MyClientCallback : public BLEClientCallbacks {
+    private:
+        Bluetooth* _bluetooth;
+    public:
+        MyClientCallback(Bluetooth* bluetooth) : _bluetooth(bluetooth) {}
 
-BluetoothSearch::BluetoothSearch(bool mode){
-    bluetoothMode = mode;
-}
+        void onConnect(BLEClient* pClient) override {
+            Serial.println("Connected to device!");
+        }
+
+        void onDisconnect(BLEClient* pClient) override {
+            Serial.println("Disconnected from device!");
+        }
+};
 
 
-
-bool BluetoothSearch::hasAServiceUUID(BLEAdvertisedDevice &device, BLEUUID uuid){
-    return device.haveServiceUUID() && device.isAdvertisingService(uuid);
-}
-
-void BluetoothSearch::init(){
-    BLEDevice::init("BikeEsp_Bike_Computer");
-    bleScan = BLEDevice::getScan();
-    bleScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks(this));
-    bleScan->setActiveScan(true); 
-    bleScan->setInterval(100);
-    bleScan->setWindow(99);
-
-}
- 
-void BluetoothSearch::scanAvailableDevices(){
-    Serial.println("[BLE] Starting scan...");
-    devices.clear();
-    BLEScanResults scanResults = bleScan->start(5, false);
-    Serial.printf("[BLE] Scan finished. Found %d devices\n", BluetoothSearch::devices.size());
+/// Bluetooth class methods ///
+Bluetooth::Bluetooth(){
+    _BLEScan = nullptr;
+    _Client = nullptr;
 }
 
 
-///// BLE SENSOR CLASS METHODS //////
-
-BleSensor::BleSensor() {
-    sensor = nullptr;
-    sensorClient = nullptr;
-    connected = false;
-    heartRateBpm = 0;
-    powerWatts = 0;
-    cadenceRpm = 0;
+/// @brief Initialize the BLE device
+/// @note Sets up the BLE device with a default name.
+void Bluetooth::init(){
+    BLEDevice::init("ESP32_BLE_Device");
 }
 
-BleSensor::BleSensor(std::string macAddress){
-    deviceMacAddress = macAddress;
-}   
-
-BleSensor::BleSensor(BLEAdvertisedDevice* device) {
-    _advertisedDevice = device;
-    deviceMacAddress = device->getAddress().toString();
+/// @brief Start scanning for BLE devices
+/// @note Configures and starts the BLE scan with specified parameters.
+void Bluetooth::startScan(){
+    _BLEScan = BLEDevice::getScan();
+    _BLEScan->setActiveScan(true);
+    _BLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks(this));
+    _BLEScan->setInterval(100);
+    _BLEScan->setWindow(99);
+    _scanResults = _BLEScan->start(5, false);
 }
 
-bool BleSensor::connectSensor(){
-    sensorClient = BLEDevice::createClient();
-    if (sensorClient == nullptr) return false;
-    log_e("Tying to connect to sensor %s", deviceMacAddress.c_str());
-
-    // if (_advertisedDevice != nullptr) {
-    //     if (!sensorClient->connect(_advertisedDevice)) {
-    //         return false;
-    //     }
-    // } else {
-        BLEAddress bleAddr("fc:78:4a:b3:1d:66");
-        if (!sensorClient->connect(bleAddr)) return false;
-    // }
-
-    if(auto hr = sensorClient->getService(HR_SERVICE_UUID)){
-        auto ch = hr->getCharacteristic(HR_CHAR_UUID);
-        if (ch && ch->canNotify()) ch->registerForNotify([this](BLERemoteCharacteristic *pBLERemoteCharacteristic, uint8_t *pData, size_t length, bool isNotify){
-            heartRateNotify(pBLERemoteCharacteristic, pData, length, isNotify);
-        });
-    }
-
-    if (auto csc = sensorClient->getService(CSC_SERVICE_UUID)) {
-        auto ch = csc->getCharacteristic(CSC_MEASUREMENT_UUID);
-        if (ch && ch->canNotify()) ch->registerForNotify([this](BLERemoteCharacteristic *pBLERemoteCharacteristic, uint8_t *pData, size_t length, bool isNotify){
-            cadanceNotify(pBLERemoteCharacteristic, pData, length, isNotify);
-        });
-    }
-
-
-    if (auto pwr = sensorClient->getService(POWER_SERVICE_UUID)) {
-        auto ch = pwr->getCharacteristic(POWER_MEASUREMENT_UUID);
-        if (ch && ch->canNotify()) ch->registerForNotify([this](BLERemoteCharacteristic *pBLERemoteCharacteristic, uint8_t *pData, size_t length, bool isNotify){
-            powerNotify(pBLERemoteCharacteristic, pData, length, isNotify);
-        });
-    }
-
-    connected = true;
-
-    return true;
+/// @brief Stop scanning for BLE devices
+/// @note Stops the ongoing BLE scan.
+void Bluetooth::stopScan(){
+    _BLEScan->stop();
+    Serial.println("Scan stopped!");
 }
 
-void BleSensor::heartRateNotify(BLERemoteCharacteristic *pBLERemoteCharacteristic, uint8_t *pData, size_t length, bool isNotify){
-    if (length > 1) {
-        heartRateBpm = pData[1];
-        Serial.printf("HR: %d BPM\n", heartRateBpm);
-    }
-}
-void BleSensor::cadanceNotify(BLERemoteCharacteristic *pBLERemoteCharacteristic, uint8_t *pData, size_t length, bool isNotify) {
-    /*
-    * Flags:
-    * bit0 = wheel revolution data present
-    * bit1 = crank revolution data present
-    */
-    uint8_t flags = pData[0];
-    int index = 1;
-
-
-    if (flags & 0x02) { // crank data
-        uint16_t crankRevs = pData[index] | (pData[index + 1] << 8);
-        uint16_t crankTime = pData[index + 2] | (pData[index + 3] << 8);
-        index += 4;
-
-
-        static uint16_t lastCrankRevs = 0;
-        static uint16_t lastCrankTime = 0;
-
-
-        uint16_t deltaRevs = crankRevs - lastCrankRevs;
-        uint16_t deltaTime = crankTime - lastCrankTime;
-
-
-        if (deltaTime > 0) {
-        cadenceRpm = (deltaRevs * 60 * 1024) / deltaTime;
-        Serial.printf("Cadans: %d RPM\n", cadenceRpm);
-    }
-
-
-    lastCrankRevs = crankRevs;
-    lastCrankTime = crankTime;
-    }
-}
-void BleSensor::powerNotify(BLERemoteCharacteristic *pBLERemoteCharacteristic, uint8_t *pData, size_t length, bool isNotify) {
-    if (length >= 4) {
-        powerWatts = pData[2] | (pData[3] << 8);
-        Serial.printf("Vermogen: %d W\n", powerWatts);
-    }
+/// @brief Connect to a BLE device using its advertised device information
+/// @param advertisedDevice Pointer to the advertised device to connect to
+/// @note Creates a BLE client and connects to the specified advertised device.
+void Bluetooth::connectToDevice(BLEAdvertisedDevice* advertisedDevice){
+    _Client = BLEDevice::createClient();
+    _Client->setClientCallbacks(new MyClientCallback(this));
+    _Client->connect(targetDevice);
 }
 
-BLEClient* BleSensor::getClient(){
-    return sensorClient;
-}
 
-bool BleSensor::isConnected(){
-    return sensorClient->isConnected();
-}
+

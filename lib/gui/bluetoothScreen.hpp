@@ -3,10 +3,10 @@
 #include "bluetooth.hpp"
 #include "globalGuiDef.h"
 
-extern BluetoothSearch bleSensors;
+extern Bluetooth bleSensors;
 extern BLEScan* bleScan;    
 
-extern std::vector<ConnectedDevice> connectedDevices;
+
 
 void makeBleScreen();
 void updateBleScreen();
