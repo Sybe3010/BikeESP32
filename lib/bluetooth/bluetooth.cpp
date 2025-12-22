@@ -44,7 +44,7 @@ Bluetooth::Bluetooth(){
 /// @brief Initialize the BLE device
 /// @note Sets up the BLE device with a default name.
 void Bluetooth::init(){
-    BLEDevice::init("ESP32_BLE_Device");
+    BLEDevice::init("BikeEsp");
 }
 
 /// @brief Start scanning for BLE devices
@@ -72,6 +72,23 @@ void Bluetooth::connectToDevice(BLEAdvertisedDevice* advertisedDevice){
     _Client = BLEDevice::createClient();
     _Client->setClientCallbacks(new MyClientCallback(this));
     _Client->connect(targetDevice);
+
+    if(auto hr = _Client->getService(targetServiceUUID)) {
+        Serial.println("Service found!");
+        auto characteristic = hr->getCharacteristic(BLEUUID((uint16_t)0x2A37)); // Replace with your target characteristic UUID
+        if(characteristic && characteristic->canNotify()){
+            characteristic->registerForNotify([](BLERemoteCharacteristic* pBLERemoteCharacteristic, uint8_t* pData, size_t length, bool isNotify) {
+                Serial.print("Notification received: ");
+                for(size_t i = 0; i < length; i++) {
+                    Serial.print(pData[i]);
+                    Serial.print(" ");
+                }
+                Serial.println();
+            });
+        }
+    } else {
+        Serial.println("Service not found!");
+    }
 }
 
 
