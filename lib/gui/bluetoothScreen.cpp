@@ -31,19 +31,32 @@ void makeBleScreen(){
 }
 
 void updateBleScreen(){
-    // uint8_t sensorCount = 1;
+    bleSensors.startScan();
 
-    // bleSensors.scanAvailableDevices();
+    uint8_t devicesCount = 1;
 
-    // for(int i = 0; i < bleSensors.devices.size(); i++){
-    //     lv_table_set_cell_value_fmt(bleScreen, sensorCount, 0, LV_SYMBOL_BLUETOOTH " - %s", bleSensors.devices[i].name.c_str());
-    //     lv_table_set_cell_value_fmt(bleScreen, sensorCount, 1, "%s", bleSensors.devices[i].deviceMacAddress.c_str());
-    //     sensorCount++;
-    // }
+    for(int i = 0; i < bleSensors.getScanResults().getCount(); i++){
+        BLEAdvertisedDevice device = bleSensors.getScanResults().getDevice(i);
+        lv_table_set_cell_value(bleScreen, devicesCount, 0, device.getName().c_str());
+        lv_table_set_cell_value(bleScreen, devicesCount, 1, device.getAddress().toString().c_str());
+        devicesCount++;
+    }
 }
 
 void bleDeviceEvent(lv_event_t *e){
-    
+    lv_event_code_t code = lv_event_get_code(e);
+    lv_obj_t *obj = (lv_obj_t*)lv_event_get_target(e);
+    uint32_t row; // 32 bit omdat lv_table_get_selected_cell dit type nodig heeft
+    uint32_t col;
+    if(code == LV_EVENT_LONG_PRESSED) {
+        lv_table_get_selected_cell(obj, &row, &col);
+        Serial.print("Selected device: ");
+        Serial.println(lv_table_get_cell_value(obj, row, 0));
+        Serial.print("MAC Address: ");
+        Serial.println(lv_table_get_cell_value(obj, row, 1));
+        bleSensors.targetDevice = new BLEAdvertisedDevice(bleSensors.getScanResults().getDevice(row - 1));
+        bleSensors.connectToDevice(bleSensors.targetDevice);
+    }
 }
 
 

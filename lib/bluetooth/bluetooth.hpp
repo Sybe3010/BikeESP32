@@ -28,6 +28,8 @@ class Bluetooth{
         void disconnectFromDevice(BLEClient* pClient);
         void disconnectFromDevice(std::string deviceAddress);
 
+        BLEScanResults getScanResults();
+
         void printDeviceInfo(BLEAdvertisedDevice advertisedDevice);
         void printClientInfo(BLEClient* pClient);
 };

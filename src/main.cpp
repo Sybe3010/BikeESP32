@@ -56,8 +56,8 @@ void setup() {
 
   updateGpxListScreen();
 
-  bleSensors.startScan();
-  bleSensors.connectToDevice(bleSensors.targetDevice);
+  //bleSensors.startScan();
+  //bleSensors.connectToDevice(bleSensors.targetDevice);
 }
 
 void loop() {

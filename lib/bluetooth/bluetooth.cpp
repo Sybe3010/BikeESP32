@@ -12,7 +12,7 @@ class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks {
             Serial.print("Found device: ");
             Serial.println(advertisedDevice.toString().c_str());
             if(advertisedDevice.haveServiceUUID() && advertisedDevice.isAdvertisingService(targetServiceUUID)) { // Replace with your target device name
-                _bluetooth->targetDevice = new BLEAdvertisedDevice(advertisedDevice);
+                //_bluetooth->targetDevice = new BLEAdvertisedDevice(advertisedDevice);
                 Serial.println("Target device found!");
             }
         }
@@ -71,8 +71,10 @@ void Bluetooth::stopScan(){
 void Bluetooth::connectToDevice(BLEAdvertisedDevice* advertisedDevice){
     _Client = BLEDevice::createClient();
     _Client->setClientCallbacks(new MyClientCallback(this));
-    _Client->connect(targetDevice);
+    _Client->connect(advertisedDevice);
 
+
+    // Heart rate notify
     if(auto hr = _Client->getService(targetServiceUUID)) {
         Serial.println("Service found!");
         auto characteristic = hr->getCharacteristic(BLEUUID((uint16_t)0x2A37)); // Replace with your target characteristic UUID
@@ -91,5 +93,6 @@ void Bluetooth::connectToDevice(BLEAdvertisedDevice* advertisedDevice){
     }
 }
 
-
-
+BLEScanResults Bluetooth::getScanResults(){
+    return _scanResults;
+}
