@@ -2,6 +2,10 @@
 
 
 /// Callbacks ///
+
+/// @brief Callback voor de BLEScan 
+/// @note Wordt aangeroepen bij elk gedetecteerd apparaat, voor dan voor elk apparaat de code in onResult uit.
+
 class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks {
     private:
         Bluetooth* _bluetooth;
@@ -18,6 +22,8 @@ class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks {
         }
 };
 
+/// @brief callback voor de BLE Client
+/// @note De code wordt uitgevoerd als de client connect of disconnect.
 class MyClientCallback : public BLEClientCallbacks {
     private:
         Bluetooth* _bluetooth;

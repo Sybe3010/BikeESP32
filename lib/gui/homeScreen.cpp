@@ -38,30 +38,30 @@ void settingsBtnEvent(lv_event_t * e){
 }
 
 void backBtnEvent(lv_event_t * e){
-    // Night/Day button event handler
+    
 }
 void accountBtnEvent(lv_event_t * e){
-    // Account button event handler
+    
 }
 void bluetoothBtnEvent(lv_event_t * e){
     updateBleScreen();
     lv_screen_load(bleScreen);
 }
 void moreSettingsBtnEvent(lv_event_t * e){
-    // More Settings button event handler
+
 }
 
 void brightnessOptionBtnEvent(lv_event_t * e){
-    // Brightness Option button event handler
+
 }
 void mapOptionBtnEvent(lv_event_t * e){
-    // Map Option button event handler
+
 }
 void activityOptionBtnEvent(lv_event_t * e){
-    // Activity Option button event handler
+
 }
 void touchscreenOptionBtnEvent(lv_event_t * e){
-    // Touchscreen Option button event handler
+   
 }
 
 void roadActBtnEvent(lv_event_t * e){

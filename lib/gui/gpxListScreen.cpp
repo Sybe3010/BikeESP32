@@ -14,7 +14,9 @@ void gpxListEvent(lv_event_t* e){
             String gpxName = sel.substring(6,sel.length());
             String gpxFile = String(lv_table_get_cell_value(obj, row, 1));
 
+            log_e("De gpxFileName is: %s", gpxFile.c_str());
             gpxFileFolder = String(trkFolder) + "/" + gpxFile;
+            log_e("De volledige string is: %s", gpxFileFolder.c_str());
             fillGpxDetailsScreen();
             lv_screen_load(gpxDetailsScreen); 
         }

@@ -9,13 +9,13 @@
 class GPS
 {
     private:
-        TinyGPSPlus gps;
-        bool simulateGPS = false;
+        TinyGPSPlus gps; //  TinyGPSPlus object voor GPS data parsing
+        bool simulateGPS = false; //  Schakel GPS simulatie in/uit
     public:
-        struct GPSData
+        struct GPSData // Structure om alle GPS data te bevatten
         {
-            double latitude;
-            double longitude;
+            double latitude; // in degrees
+            double longitude; // in degrees
             double speed; // in km/h
             double heading; // in degrees
             double altitude; // in meters
@@ -25,7 +25,6 @@ class GPS
         } gpsData;
 
         GPS();
-        void begin(unsigned long baud);
-        GPSData getAllData();
-        GPSData SimulateByGPXTrack();
+        void begin(unsigned long baud); // Initialiseer de GPS module met de opgegeven baudrate
+        GPSData getAllData(); // Haal alle GPS data op
 };
