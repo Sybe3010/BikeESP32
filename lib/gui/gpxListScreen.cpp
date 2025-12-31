@@ -2,6 +2,8 @@
 
 lv_obj_t *gpxListScreen;
 
+std::vector<String> fileNames;
+
 void gpxListEvent(lv_event_t* e){
     lv_event_code_t code = lv_event_get_code(e);
     lv_obj_t *obj = (lv_obj_t *)lv_event_get_current_target(e);
@@ -67,6 +69,9 @@ void updateGpxListScreen(){
             {
                 lv_table_set_cell_value_fmt(gpxListScreen, totalGpx, 0, LV_SYMBOL_SHUFFLE " - %s", trackName.c_str());
                 lv_table_set_cell_value_fmt(gpxListScreen, totalGpx, 1, "%s", fileName.c_str());
+
+                fileNames.push_back(String(fileName.c_str()));
+
                 totalGpx++;
             }
         }

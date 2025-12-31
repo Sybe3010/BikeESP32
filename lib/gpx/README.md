@@ -8,7 +8,8 @@ Het lezen van de gpx bestand gebeurt met behulp van de [tinyXml2 Library](https:
 Het hoogteprofiel wordt uit de track gehaald. Om de juiste altitude data uit de track te halen moet deze data wel beschikbaar zijn in het bestand. Anders zal het hoogteprofiel niet juist uitgelezen worden. 
 
 #### opmerkingen
-Op deze moment wordt de totale stijging nog niet juist uit de track gehaald.
+Op deze moment wordt de totale stijging en daling nog niet juist uit de track gehaald.
+
 #### Climbs
 Er kunnen climbs uit de tracks gehaald worden. Hiervoor wordt de data uit het hoogteprofiel gebruikt. Dus als deze niet juist is kunnen er ook geen juiste climbs uit de track gehaald worden. Deze hebben standaard volgende filtering.
 * langer dan 100m, gemiddeld 3% stijging.

@@ -7,10 +7,11 @@ void GPS::begin(unsigned long baud)
     // gebruik de meegegeven baud-parameter
     Serial2.begin(baud, SERIAL_8N1, GPS_SERIAL_RX_PIN, GPS_SERIAL_TX_PIN);
 
-    simulateGPS = false; // Zet simulatie uit bij begin
+    simulateGPS = true; // Zet simulatie uit bij begin
 }
 
-/// 
+/// @brief Verkrijg alle beschikbare gpsData.
+/// @return geeft alle gps data terug in een GPSData struct.
 GPS::GPSData GPS::getAllData(){
     if(simulateGPS){
         // Simuleer GPS-gegevens als er geen echte GPS-gegevens zijn  51.248304, 4.487703
