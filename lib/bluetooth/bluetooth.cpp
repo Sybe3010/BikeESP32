@@ -15,10 +15,6 @@ class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks {
         void onResult(BLEAdvertisedDevice advertisedDevice) override {
             Serial.print("Found device: ");
             Serial.println(advertisedDevice.toString().c_str());
-            if(advertisedDevice.haveServiceUUID() && advertisedDevice.isAdvertisingService(targetServiceUUID)) { // Replace with your target device name
-                //_bluetooth->targetDevice = new BLEAdvertisedDevice(advertisedDevice);
-                Serial.println("Target device found!");
-            }
         }
 };
 
@@ -75,18 +71,55 @@ void Bluetooth::stopScan(){
 /// @param advertisedDevice Pointer to the advertised device to connect to
 /// @note Creates a BLE client and connects to the specified advertised device.
 void Bluetooth::connectToDevice(BLEAdvertisedDevice* advertisedDevice){
-    _Client = BLEDevice::createClient();
-    _Client->setClientCallbacks(new MyClientCallback(this));
-    _Client->connect(advertisedDevice);
-
+    BleClients newClient;
+    newClient._client = BLEDevice::createClient();
+    newClient._client->setClientCallbacks(new MyClientCallback(this));
+    newClient._client->connect(advertisedDevice);
 
     // Heart rate notify
-    if(auto hr = _Client->getService(targetServiceUUID)) {
+    if(auto hr = newClient._client->getService(HRServiceUUID)) {
         Serial.println("Service found!");
+        newClient.hr = true;
         auto characteristic = hr->getCharacteristic(BLEUUID((uint16_t)0x2A37)); // Replace with your target characteristic UUID
         if(characteristic && characteristic->canNotify()){
-            characteristic->registerForNotify([](BLERemoteCharacteristic* pBLERemoteCharacteristic, uint8_t* pData, size_t length, bool isNotify) {
-                Serial.print("Notification received: ");
+            characteristic->registerForNotify([this](BLERemoteCharacteristic* pBLERemoteCharacteristic, uint8_t* pData, size_t length, bool isNotify) {
+                hrValue = pData[1];
+            });
+        }
+    }
+
+    // Speed Cadance Notify
+    if(auto sc = newClient._client->getService(CSServiceUUID)) {
+        Serial.println("Service found!");
+        auto typeSensor = sc->getCharacteristic(BLEUUID((uint16_t)0x2A5C));
+        if(typeSensor && typeSensor->canRead()){
+            std::string typeSensorString = typeSensor->readValue();
+
+            if(typeSensorString[0] == 1){
+                newClient.speed = true;
+            } else {
+                newClient.speed = false;
+            }
+
+            if(typeSensorString[1] == 1){
+                newClient.cadance = true;
+            } else {
+                newClient.cadance = false;
+            }
+
+            if(typeSensorString[2] == 1){
+                newClient.speed = true;
+                newClient.cadance = false;
+            } else {
+                newClient.speed = false;
+                newClient.cadance = false;
+            }
+        }
+
+        auto sensorValue = sc->getCharacteristic(BLEUUID((uint16_t)0x2A5B));
+        if(sensorValue && sensorValue->canNotify()){
+            sensorValue->registerForNotify([](BLERemoteCharacteristic* pBLERemoteCharacteristic, uint8_t* pData, size_t length, bool isNotify) {
+                Serial.print("Notification received: "); // bit 0: wheel revolutions bit, bit 1: crank evolutions bit
                 for(size_t i = 0; i < length; i++) {
                     Serial.print(pData[i]);
                     Serial.print(" ");
@@ -94,9 +127,9 @@ void Bluetooth::connectToDevice(BLEAdvertisedDevice* advertisedDevice){
                 Serial.println();
             });
         }
-    } else {
-        Serial.println("Service not found!");
     }
+
+    clients.push_back(newClient);
 }
 
 BLEScanResults Bluetooth::getScanResults(){

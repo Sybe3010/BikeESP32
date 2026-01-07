@@ -5,7 +5,9 @@
 #include <BLEDevice.h>
 #include <BLEAdvertisedDevice.h>
 
-static BLEUUID targetServiceUUID("180D"); // ServiceUUID van een hartslagmeter
+static BLEUUID HRServiceUUID("180D"); // ServiceUUID van een hartslagmeter
+static BLEUUID CSServiceUUID("1816"); // ServiceUUID van een snelheid/cadans sensor
+static BLEUUID PWRServiceUUID("1818"); // ServiceUUID van een hartslagmeter
 
 class Bluetooth{
     private: 
@@ -13,10 +15,24 @@ class Bluetooth{
         BLEClient *_Client; // pointer voor de client
 
         BLEScanResults _scanResults; // resultaten van de BLE Scan
-    public:
-        BLEAdvertisedDevice *targetDevice; // pointer voor het device dat gebruikt wordt door de client
+
+        struct BleClients{
+            BLEClient* _client;
+            bool hr;
+            bool cadance;
+            bool speed;
+            BLEAdvertisedDevice *targetDevice;
+        };
 
         
+        uint8_t cadanceValue;
+        uint8_t speedValue;
+    public:
+        BLEAdvertisedDevice *targetDevice; // pointer voor het device dat gebruikt wordt door de client
+        std::vector<BleClients> clients;
+        uint8_t hrValue;
+        uint8_t* hrPtr = &hrValue;
+
         Bluetooth();
         void init(); // initialiseerd BLE
         void startScan(); // start de scan

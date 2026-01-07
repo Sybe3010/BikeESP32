@@ -89,8 +89,9 @@ void fillGpxDetailsScreen(){
 
     details.loadTrack();
     lv_label_set_text_fmt(routeLenghtLabel, "Lenght: %.1f km", details.trackLenght / 1000);
-    lv_label_set_text_fmt(routeAscentLabel, "Ascent: %d m", details.totalAscent);
+    lv_label_set_text_fmt(routeAscentLabel, "Ascent: %.1f m", details.totalAscent);
     
+    lv_obj_add_flag(routeElevationChart, LV_OBJ_FLAG_SEND_DRAW_TASK_EVENTS);
     lv_chart_set_point_count(routeElevationChart, details.elevationProfile.size());
     uint32_t i;
     for(i = 0; i < details.elevationProfile.size(); i++) {

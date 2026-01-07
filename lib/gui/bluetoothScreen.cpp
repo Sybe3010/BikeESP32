@@ -56,6 +56,8 @@ void bleDeviceEvent(lv_event_t *e){
         Serial.println(lv_table_get_cell_value(obj, row, 1));
         bleSensors.targetDevice = new BLEAdvertisedDevice(bleSensors.getScanResults().getDevice(row - 1));
         bleSensors.connectToDevice(bleSensors.targetDevice);
+
+        lv_screen_load(homeScreen);
     }
 }
 
