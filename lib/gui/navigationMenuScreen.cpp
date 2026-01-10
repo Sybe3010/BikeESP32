@@ -5,6 +5,7 @@ lv_obj_t *mapButton;
 lv_obj_t *gpxListButton;
 lv_obj_t *recieveButton;
 
+// event handelers
 void mapButtonEvent(lv_event_t *e) {
     lv_screen_load(mapScreen);
 }
@@ -16,6 +17,7 @@ void makeNavigationMenuScreen() {
     navigationMenuScreen = lv_obj_create(NULL);
     lv_obj_clear_flag(navigationMenuScreen, LV_OBJ_FLAG_SCROLLABLE);
 
+    // buttons
     mapButton = lv_button_create(navigationMenuScreen);
     lv_obj_set_size(mapButton, 320, 66);
     lv_obj_set_pos(mapButton, 0, 88);

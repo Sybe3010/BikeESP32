@@ -10,6 +10,8 @@ void GPS::begin(unsigned long baud)
     simulateGPS = false; // Zet simulatie uit bij begin
 }
 
+/// @brief Verkrijg alle beschikbare gpsData.
+/// @return geeft alle gps data terug in een GPSData struct.
 GPS::GPSData GPS::getAllData(){
     if(simulateGPS){
         // Simuleer GPS-gegevens als er geen echte GPS-gegevens zijn  51.248304, 4.487703
@@ -41,9 +43,4 @@ GPS::GPSData GPS::getAllData(){
 
         return data;
     }
-}
-
-
-GPS::GPSData GPS::SimulateByGPXTrack(){
-    
 }

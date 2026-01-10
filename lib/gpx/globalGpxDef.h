@@ -1,35 +1,10 @@
-/**
- * @file globalGpxDef.h
- * @author Jordi Gauchía (jgauchia@jgauchia.com)
- * @brief  Global GPX Variables
- * @version 0.2.3
- * @date 2025-11
- */
-
 #pragma once
 
 #include <pgmspace.h>
 #include <stdint.h>
 
 static const char* wptFile PROGMEM = "/sdcard/WPT/waypoint.gpx"; /**< Path to the waypoint GPX file on the SD card. */
-static const char* wptFolder PROGMEM = "/sdcard/WPT";            /**< Path to the waypoint folder on the SD card. */
 static const char* trkFolder PROGMEM = "/sdcard/TRK";            /**< Path to the track folder on the SD card. */
-
-/**
- * @brief Waypoint action enum
- *
- * @details Enumeration of possible actions for GPX waypoints.
- */
-enum gpxAction_t
-{
-    WPT_NONE,   /**< No waypoint action. */
-    WPT_ADD,    /**< Add a new waypoint. */
-    GPX_LOAD,   /**< Load waypoints from GPX file. */
-    GPX_EDIT,   /**< Edit an existing waypoint. */
-    GPX_DEL,    /**< Delete a waypoint. */
-};
-
-extern uint8_t gpxAction; /**< Indicates the current GPX waypoint action to be performed. */
 
 /**
  * @brief Waypoint Structure
@@ -53,28 +28,17 @@ struct wayPoint
     float     pdop;    /**< Position dilution of precision. */
 };
 
+/// @brief Structure to hold elevation data points
+/// @note Each point contains distance, elevation, and grade information.
 struct elevationData{
     float distance;
     float elevation;
     float grade;
 };
 
-/**
- * @brief Track turn points structure
- *
- * @details Structure representing a track turn point
- */
-struct TurnPoint 
-{
-    int idx;           /**< Index of the track point */
-    float angle;       /**< Turn angle at this point (positive = right, negative = left) */
-    float distance;    /**< Distance from start to this point (in meters) */
-}; 
-/**
- * @brief Climbsegment
- *
- * @details Structure representing a climb
- */
+
+/// @brief Climbsegment structure
+/// @note Structure representing a climb
 struct ClimbSegment{
     size_t startIndex;
     size_t endIndex;
