@@ -15,6 +15,7 @@
 #include "maps.hpp"
 #include "gpxDetailScreen.hpp"
 #include "bluetoothScreen.hpp"
+#include "activityHomePage.hpp"
 
 #include "activity.hpp"
 
@@ -51,9 +52,11 @@ void setup() {
   makeGpxListScreen(); // maak het GPX lijst scherm
   makeGpxDetailsScreen(); // maak het GPX detail scherm
   makeBleScreen(); // maak het Bluetooth scherm
+  
 
   lv_screen_load(homeScreen); // laad het homescreen
   makeStatusBar(); // maak de statusbalk
+  makeActivityHomePage();
 
   updateGpxListScreen(); // update de GPX lijst scherm
 

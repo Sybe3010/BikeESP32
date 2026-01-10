@@ -49,12 +49,12 @@ void IRAM_ATTR touchRead(lv_indev_t *indev_driver, lv_indev_data_t *data)
   lgfx::touch_point_t tp;
     data->state = LV_INDEV_STATE_RELEASED; // Maakt een datapunt aan dat LVGL gebruikt om de touch status bij te houden
 
-    if (tft.getTouch(&tp, TOUCH_MAX_POINTS)) 
-    {
-        data->state = LV_INDEV_STATE_PRESSED;
-        data->point.x = tp.x;
-        data->point.y = tp.y;
-    }
+  if (tft.getTouch(&tp, TOUCH_MAX_POINTS)) 
+  {
+      data->state = LV_INDEV_STATE_PRESSED;
+      data->point.x = tp.x;
+      data->point.y = tp.y;
+  }
 }
 
 /// @brief LVGL tick taak

@@ -31,7 +31,19 @@ class MyClientCallback : public BLEClientCallbacks {
         }
 
         void onDisconnect(BLEClient* pClient) override {
-            Serial.println("Disconnected from device!");
+            for(int i = 0; i < _bluetooth->clients.size(); i++){
+                if(pClient == _bluetooth->clients[i]._client){
+                    if (pClient->isConnected())
+                    {
+                        pClient->disconnect();
+                    }
+                    
+                    delete pClient;
+
+                    _bluetooth->clients.erase(_bluetooth->clients.begin() + i);
+                    _bluetooth->hrValue = 0;
+                }
+            }
         }
 };
 
@@ -76,10 +88,14 @@ void Bluetooth::connectToDevice(BLEAdvertisedDevice* advertisedDevice){
     newClient._client->setClientCallbacks(new MyClientCallback(this));
     newClient._client->connect(advertisedDevice);
 
+    
+    clients.push_back(newClient);
+    auto &client = clients.back();
+
     // Heart rate notify
-    if(auto hr = newClient._client->getService(HRServiceUUID)) {
+    if(auto hr = client._client->getService(HRServiceUUID)) {
         Serial.println("Service found!");
-        newClient.hr = true;
+        client.hr = true;
         auto characteristic = hr->getCharacteristic(BLEUUID((uint16_t)0x2A37)); // Replace with your target characteristic UUID
         if(characteristic && characteristic->canNotify()){
             characteristic->registerForNotify([this](BLERemoteCharacteristic* pBLERemoteCharacteristic, uint8_t* pData, size_t length, bool isNotify) {
@@ -89,30 +105,30 @@ void Bluetooth::connectToDevice(BLEAdvertisedDevice* advertisedDevice){
     }
 
     // Speed Cadance Notify
-    if(auto sc = newClient._client->getService(CSServiceUUID)) {
+    if(auto sc = client._client->getService(CSServiceUUID)) {
         Serial.println("Service found!");
         auto typeSensor = sc->getCharacteristic(BLEUUID((uint16_t)0x2A5C));
         if(typeSensor && typeSensor->canRead()){
             std::string typeSensorString = typeSensor->readValue();
-
-            if(typeSensorString[0] == 1){
-                newClient.speed = true;
+            uint16_t feature = static_cast<uint16_t>(typeSensorString[0]);
+            if(feature & 0x01){ // enkel snelheid
+                client.speed = true;
             } else {
-                newClient.speed = false;
+                client.speed = false;
             }
 
-            if(typeSensorString[1] == 1){
-                newClient.cadance = true;
+            if(feature & 0x02){ // enkel cadans
+                client.cadance = true;
             } else {
-                newClient.cadance = false;
+                client.cadance = false;
             }
 
-            if(typeSensorString[2] == 1){
-                newClient.speed = true;
-                newClient.cadance = false;
+            if(feature & 0x04){ // snelheid en candans
+                client.speed = true;
+                client.cadance = false;
             } else {
-                newClient.speed = false;
-                newClient.cadance = false;
+                client.speed = false;
+                client.cadance = false;
             }
         }
 
@@ -129,7 +145,6 @@ void Bluetooth::connectToDevice(BLEAdvertisedDevice* advertisedDevice){
         }
     }
 
-    clients.push_back(newClient);
 }
 
 BLEScanResults Bluetooth::getScanResults(){

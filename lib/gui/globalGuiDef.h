@@ -22,3 +22,6 @@ extern lv_obj_t *bleScreen;
 
 // timer voor gps updates
 extern lv_timer_t *gpsTimer;
+
+// Activityhomepage
+extern lv_obj_t *activityHomeScreen;

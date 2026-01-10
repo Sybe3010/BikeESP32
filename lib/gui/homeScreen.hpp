@@ -3,6 +3,8 @@
 #include "bluetoothScreen.hpp"
 #include "mapScreen.hpp"
 
+extern std::string typeActivity;
+
 // Hoofd scherm tiles
 extern lv_obj_t *homeTile;
 extern lv_obj_t *settingTile; // staat boven de homeTile

@@ -65,7 +65,9 @@ void touchscreenOptionBtnEvent(lv_event_t * e){
 }
 
 void roadActBtnEvent(lv_event_t * e){
-    lv_tileview_set_tile(homeScreenTiles,settingTile, LV_ANIM_OFF);
+    typeActivity = "Road";
+    lv_obj_send_event(activityHomeScreen, LV_EVENT_VALUE_CHANGED, NULL);
+    lv_screen_load(activityHomeScreen);
 }
 
 void makeHomeScreen(){

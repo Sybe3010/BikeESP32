@@ -59,6 +59,7 @@ void bleDeviceEvent(lv_event_t *e){
 
         lv_screen_load(homeScreen);
     }
+
 }
 
 
