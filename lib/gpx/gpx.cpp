@@ -8,6 +8,11 @@ GpxParser::~GpxParser() {
     trackData.clear();
 }
 
+/// @brief Functie om alle gpx bestanden in een map te scannen en de waarden van een specifiek element binnen een tag op te halen
+/// @param element Dit is het element waarvan de waarde opgehaald moet worden
+/// @param folderPath Dit is het pad naar de map met gpx bestanden
+/// @return Een map met bestandsnamen als sleutel en een vector van elementwaarden als waarde
+/// @note Deze functie maakt gebruik van de TinyXML2 bibliotheek om de gpx bestanden te parsen, gebaseerd op code van Jordi Gauchía
 std::map<std::string, std::vector<std::string>> GpxParser::getTagElementList(const char* tag, const char* element, const std::string& folderPath)
 {
     std::map<std::string, std::vector<std::string>> elementsByFile;
@@ -65,6 +70,9 @@ std::map<std::string, std::vector<std::string>> GpxParser::getTagElementList(con
     return elementsByFile;
 }
 
+/// @brief  Laad en parse het gpx bestand om de track data op te halen
+/// @return true als het laden en parsen succesvol was, anders false
+/// @note Deze functie maakt gebruik van de TinyXML2 bibliotheek om de gpx bestanden te parsen, gebaseerd op code van Jordi Gauchía. Aangepast om ook het hoogteprofiel en klimsegmenten er uit te halen.
 bool GpxParser::loadTrack() {
     // Implementation to parse GPX track data
     tinyxml2::XMLDocument route;
@@ -116,6 +124,9 @@ bool GpxParser::loadTrack() {
     return true;
 }
 
+
+/// @brief haal de waypoints op uit het gpx bestand
+/// @return true als het ophalen succesvol was, anders false
 bool GpxParser::getWaypoints() {
     // Implementation to parse default GPX waypoints
     tinyxml2::XMLDocument doc;
@@ -162,6 +173,8 @@ bool GpxParser::getWaypoints() {
     return true;
 }
 
+/// @brief haal de default waypoints op uit het gpx bestand
+/// @return true als het ophalen succesvol was, anders false
 bool GpxParser::getDefaultWaypoints() {
     _filePath = "/sdcard/default_waypoints.gpx";
     bool result = getWaypoints();
@@ -169,6 +182,8 @@ bool GpxParser::getDefaultWaypoints() {
     return result;
 }
 
+/// @brief Bereken de lengte van het track in meters
+/// @note Maakt gebruik van de Haversine formule om de afstand tussen twee GPS punten te berekenen
 void GpxParser::getTrackLenght(){
     float distance = 0; 
     for(int i = 0; i < trackData.size() - 1; i++){
@@ -178,6 +193,15 @@ void GpxParser::getTrackLenght(){
     trackLenght = distance;
 }
 
+/// @brief Bereken de afstand tussen twee GPS punten met de Haversine formule
+/// @param lon1 Longitude van punt 1
+/// @param lat1 Latitude van punt 1
+/// @param lon2 Longitude van punt 2
+/// @param lat2 Latitude van punt 2
+/// @param h1 Hoogte van punt 1
+/// @param h2 Hoogte van punt 2
+/// @return Afstand tussen de twee punten in meters
+/// @note De Haversine formule houdt rekening met de kromming van de aarde
 float GpxParser::getDistance(float lon1, float lat1, float lon2, float lat2, float h1, float h2){
     float R = 6371000; //straal van de aarde in meters
 
@@ -198,34 +222,36 @@ float GpxParser::getDistance(float lon1, float lat1, float lon2, float lat2, flo
     return sqrt(dHorizontal * dHorizontal + dH* dH);
 }
 
+/// @brief Genereer het elevatieprofiel van het track
+/// @note Bereken voor elk trackpoint de afstand vanaf het begin, de elevatie en de gemiddelde helling, code klopt nog niet helemaal
 void GpxParser::getElevationProfile(){
-    elevationProfile.clear();
+    elevationProfile.clear(); 
     totalAscent = 0;     
     totalDescent = 0;     
-    if(trackData.empty()) return;  
+    if(trackData.empty()) return;   // Geen trackdata beschikbaar
     
-    for (int i = 0; i < trackData.size(); i++)
+    for (int i = 0; i < trackData.size(); i++) // Voor elk trackpoint
     {
-        elevationData point = {0};
+        elevationData point = {0}; // Maak een nieuw elevatieData object aan
 
-        if(i == 0){
+        if(i == 0){ // Eerste punt
             point.elevation = trackData[i].ele;
             point.distance = 0;
             point.grade = 0;
         } else{
-            point.elevation = trackData[i].ele;
-            point.distance = elevationProfile[i - 1].distance + getDistance(trackData[i - 1].lon, trackData[i - 1].lat, trackData[i].lon, trackData[i].lat, trackData[i - 1].ele, trackData[i].ele);
-            float elevationDelta = point.elevation - elevationProfile[i - 1].elevation;
-            float distanceDelta   = point.distance - elevationProfile[i - 1].distance;
-            if(elevationDelta > 0){
+            point.elevation = trackData[i].ele; // Elevatie van het huidige punt
+            point.distance = elevationProfile[i - 1].distance + getDistance(trackData[i - 1].lon, trackData[i - 1].lat, trackData[i].lon, trackData[i].lat, trackData[i - 1].ele, trackData[i].ele); // Totale afstand vanaf het begin tot het huidige punt
+            float elevationDelta = point.elevation - elevationProfile[i - 1].elevation; // Verandering in elevatie sinds het vorige punt
+            float distanceDelta   = point.distance - elevationProfile[i - 1].distance; // Verandering in afstand sinds het vorige punt
+            if(elevationDelta > 0){ // Stijging
                 totalAscent = totalAscent + elevationDelta;
-            } else {
+            } else { // Dalingen
                 totalDescent = totalDescent + (elevationDelta * -1);
             }
             
-            if (distanceDelta > 0.0f) {
+            if (distanceDelta > 0.0f) { //  Voorkom deling door nul
                 point.grade = elevationDelta / distanceDelta;
-            } else {
+            } else { // Geen verandering in afstand
                 point.grade = 0.0f;
             }
         }
@@ -233,75 +259,79 @@ void GpxParser::getElevationProfile(){
     }
 }
 
+/// @brief Detecteer klimsegmenten in het track
+/// @note het detecteert klimsegmenten op basis van stijgingen en kleine dalingen, en slaat deze op in de climbs vector
+/// Het gebruikt drempelwaarden voor maximale negatieve helling en toegestane daling om te bepalen of een segment als klim wordt beschouwdµ
+/// Het valideert ook klimsegmenten op basis van hun lengte en gemiddelde helling voordat ze worden toegevoegd aan de lijst
 void GpxParser::detectClimbs(){
-    const float maxNegativeGrade = -0.01;
-    const float mapDropAllowed = 5.0f;
+    const float maxNegativeGrade = -0.01; // Maximale negatieve helling om als kleine daling te worden beschouwd
+    const float mapDropAllowed = 5.0f; // Maximale toegestane daling in meters binnen een klimsegment
 
-    bool climbing = false;
-    size_t climbStart = 0;
+    bool climbing = false; // Huidige staat: in een klimsegment of niet
+    size_t climbStart = 0; // Startindex van het huidige klimsegment
 
     float accumulatedDrop = 0.0f;
 
-    for(int i = 1; i < elevationProfile.size(); i++){
-        float elevationDelta = elevationProfile[i].elevation - elevationProfile[i - 1].elevation;
-        float distanceDelta = elevationProfile[i].distance - elevationProfile[i - 1].distance;
+    for(int i = 1; i < elevationProfile.size(); i++){ // Begin bij 1 omdat we de vorige index nodig hebben
+        float elevationDelta = elevationProfile[i].elevation - elevationProfile[i - 1].elevation; // Verandering in elevatie sinds het vorige punt
+        float distanceDelta = elevationProfile[i].distance - elevationProfile[i - 1].distance; // Verandering in afstand sinds het vorige punt
 
-        float segmentGrade = 0.0f;
-        if(distanceDelta > 0){
-            segmentGrade = elevationDelta / distanceDelta;
+        float segmentGrade = 0.0f; // Helling van het segment
+        if(distanceDelta > 0){ // Voorkom deling door nul
+            segmentGrade = elevationDelta / distanceDelta; 
         }
 
         bool isAscending;
         bool isSmallDrop;
 
-        if(elevationDelta > 0){
+        if(elevationDelta > 0){ // Stijging
             isAscending = true;
             isSmallDrop = false;
-        } else {
+        } else { // Dalingen
             isAscending = false;
             if(segmentGrade >= maxNegativeGrade){
                 isSmallDrop = true;
             }
         }
 
-        if(isAscending || isSmallDrop){
-            if(!climbing){
+        if(isAscending || isSmallDrop){ // Stijging of kleine daling
+            if(!climbing){ // Begin van een nieuw klimsegment
                 climbing = true;
                 climbStart = i - 1;
                 accumulatedDrop = 0.0f;
             }
 
-            if(elevationDelta < 0){
+            if(elevationDelta < 0){ // Kleine daling
                 accumulatedDrop = accumulatedDrop - elevationDelta;
             }
 
-            if(accumulatedDrop > mapDropAllowed){
+            if(accumulatedDrop > mapDropAllowed){ // Te veel daling, klimsegment beëindigen
                 climbing = false;
                 size_t climbEnd = i - 1;
 
                 ClimbSegment segment;
-                segment.startIndex = climbStart;
-                segment.endIndex = climbEnd;
+                segment.startIndex = climbStart; // Startindex van het klimsegment
+                segment.endIndex = climbEnd; // Eindindex van het klimsegment
 
-                segment.totalDistance = elevationProfile[climbEnd].distance - elevationProfile[climbStart].distance;
+                segment.totalDistance = elevationProfile[climbEnd].distance - elevationProfile[climbStart].distance; // Totale afstand van het klimsegment
 
-                segment.totalElevationGain = elevationProfile[climbEnd].elevation - elevationProfile[climbStart].elevation;
+                segment.totalElevationGain = elevationProfile[climbEnd].elevation - elevationProfile[climbStart].elevation; // Totale elevatie winst van het klimsegment
 
-                if(segment.totalDistance > 0){
+                if(segment.totalDistance > 0){ // Voorkom deling door nul
                     segment.avgGrade = segment.totalElevationGain / segment.totalDistance;
-                } else {
+                } else { 
                     segment.avgGrade = 0.0;
                 }
 
                 bool valid = false;
                 
-                if(segment.totalDistance < 100){
+                if(segment.totalDistance < 100){ // Korte klimsegmenten vereisen een steilere helling
                     if(segment.avgGrade > 0.05f){
                         valid = true;
                     } else{
                         valid = false;
                     }
-                } else{
+                } else{ // Langere klimsegmenten hebben een lagere drempel voor helling
                     if(segment.avgGrade > 0.03f){
                         valid = true;
                     } else {
@@ -309,24 +339,24 @@ void GpxParser::detectClimbs(){
                     }
                 }
 
-                if(valid){
+                if(valid){ // Voeg geldig klimsegment toe aan de lijst
                     climbs.push_back(segment);
                 }
             }
-        } else {
-            if(climbing){
+        } else { // Dalingen groter dan de drempel
+            if(climbing){ // Einde van een klimsegment
                 climbing = false;
                 size_t climbEnd = i - 1;
 
                 ClimbSegment segment;
-                segment.startIndex = climbStart;
-                segment.endIndex = climbEnd;
+                segment.startIndex = climbStart; // Startindex van het klimsegment
+                segment.endIndex = climbEnd; // Eindindex van het klimsegment
 
-                segment.totalDistance = elevationProfile[climbEnd].distance - elevationProfile[climbStart].distance;
+                segment.totalDistance = elevationProfile[climbEnd].distance - elevationProfile[climbStart].distance; // Totale afstand van het klimsegment
 
-                segment.totalElevationGain = elevationProfile[climbEnd].elevation - elevationProfile[climbStart].elevation;
+                segment.totalElevationGain = elevationProfile[climbEnd].elevation - elevationProfile[climbStart].elevation; // Totale elevatie winst van het klimsegment
 
-                if(segment.totalDistance > 0){
+                if(segment.totalDistance > 0){ // Voorkom deling door nul
                     segment.avgGrade = segment.totalElevationGain / segment.totalDistance;
                 } else {
                     segment.avgGrade = 0.0;
@@ -334,13 +364,13 @@ void GpxParser::detectClimbs(){
 
                 bool valid = false;
                 
-                if(segment.totalDistance < 100){
+                if(segment.totalDistance < 100){ // Korte klimsegmenten vereisen een steilere helling
                     if(segment.avgGrade > 0.05f){
                         valid = true;
                     } else{
                         valid = false;
                     }
-                } else{
+                } else{ // Langere klimsegmenten hebben een lagere drempel voor helling
                     if(segment.avgGrade > 0.03f){
                         valid = true;
                     } else {
@@ -348,25 +378,25 @@ void GpxParser::detectClimbs(){
                     }
                 }
 
-                if(valid){
+                if(valid){ // Voeg geldig klimsegment toe aan de lijst
                     climbs.push_back(segment);
                 }
             }
         }
     }
 
-    if(climbing){
-        size_t climbEnd = elevationProfile.size() - 1;
+    if(climbing){ // Afsluiten van een lopend klimsegment aan het einde van het profiel
+        size_t climbEnd = elevationProfile.size() - 1; // Laatste index
 
-        ClimbSegment segment;
-        segment.startIndex = climbStart;
-        segment.endIndex = climbEnd;
+        ClimbSegment segment; // Maak een nieuw klimsegment aan
+        segment.startIndex = climbStart; // Startindex van het klimsegment
+        segment.endIndex = climbEnd; // Eindindex van het klimsegment
 
-        segment.totalDistance = elevationProfile[climbEnd].distance - elevationProfile[climbStart].distance;
+        segment.totalDistance = elevationProfile[climbEnd].distance - elevationProfile[climbStart].distance; // Totale afstand van het klimsegment
 
-        segment.totalElevationGain = elevationProfile[climbEnd].elevation - elevationProfile[climbStart].elevation;
+        segment.totalElevationGain = elevationProfile[climbEnd].elevation - elevationProfile[climbStart].elevation; // Totale elevatie winst van het klimsegment
 
-        if(segment.totalDistance > 0){
+        if(segment.totalDistance > 0){ //  Voorkom deling door nul
             segment.avgGrade = segment.totalElevationGain / segment.totalDistance;
         } else {
             segment.avgGrade = 0.0;
@@ -374,13 +404,13 @@ void GpxParser::detectClimbs(){
 
         bool valid = false;
         
-        if(segment.totalDistance < 100){
+        if(segment.totalDistance < 100){ // Korte klimsegmenten vereisen een steilere helling
             if(segment.avgGrade > 0.05f){
                 valid = true;
             } else{
                 valid = false;
             }
-        } else{
+        } else{ //  Langere klimsegmenten hebben een lagere drempel voor helling
             if(segment.avgGrade > 0.03f){
                 valid = true;
             } else {
@@ -388,7 +418,7 @@ void GpxParser::detectClimbs(){
             }
         }
 
-        if(valid){
+        if(valid){ // Voeg geldig klimsegment toe aan de lijst
             climbs.push_back(segment);
         }
     }
