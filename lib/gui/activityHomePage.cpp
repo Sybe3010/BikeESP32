@@ -65,6 +65,13 @@ void makeActivityHomePage(){
 
     lv_obj_add_event_cb(activityHomeScreen, updateActivityHomePage, LV_EVENT_VALUE_CHANGED, NULL);
 
+    lv_timer_t* testBLEtimer = lv_timer_create(updateBLeTest, 1000, NULL);
+    lv_timer_ready(gpsTimer);
+
+}
+
+void updateBLeTest(lv_timer_t * t){
+    lv_label_set_text(activityHomeTitel, String(bleSensors.hrValue).c_str());
 }
 
 void updateActivityHomePage(lv_event_t* e){

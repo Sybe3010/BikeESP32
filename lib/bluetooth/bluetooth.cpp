@@ -1,5 +1,35 @@
 #include "bluetooth.hpp"
 
+// deltaWithWrap: veilig verschil met wrap-around voor unsigned types
+template<typename T>
+static inline uint64_t deltaWithWrap(T newVal, T oldVal) {
+    if (newVal >= oldVal) return static_cast<uint64_t>(newVal - oldVal);
+    return static_cast<uint64_t>(static_cast<uint64_t>(std::numeric_limits<T>::max()) + 1 + newVal - oldVal);
+}
+
+static inline double deltaTimeSeconds(uint16_t newTicks, uint16_t oldTicks) {
+    uint64_t dtTicks = deltaWithWrap<uint16_t>(newTicks, oldTicks);
+    return static_cast<double>(dtTicks) / 1024.0;
+}
+
+double calculateCadenceRPM(uint16_t newCrankRevs, uint16_t oldCrankRevs,
+                           uint16_t newCrankTime, uint16_t oldCrankTime) {
+    uint64_t dRevs = deltaWithWrap<uint16_t>(newCrankRevs, oldCrankRevs);
+    double dt = deltaTimeSeconds(newCrankTime, oldCrankTime);
+    if (dt <= 0.0 || dRevs == 0) return 0.0;
+    return (static_cast<double>(dRevs) / dt) * 60.0;
+}
+
+double calculateSpeedKmh(uint32_t newWheelRevs, uint32_t oldWheelRevs,
+                         uint16_t newWheelTime, uint16_t oldWheelTime,
+                         double wheelCircumferenceMeters) {
+    uint64_t dRevs = deltaWithWrap<uint32_t>(newWheelRevs, oldWheelRevs);
+    double dt = deltaTimeSeconds(newWheelTime, oldWheelTime);
+    if (dt <= 0.0 || dRevs == 0 || wheelCircumferenceMeters <= 0.0) return 0.0;
+    double metersPerSec = (static_cast<double>(dRevs) * wheelCircumferenceMeters) / dt;
+    return metersPerSec * 3.6;
+}
+
 
 /// Callbacks ///
 
@@ -134,13 +164,50 @@ void Bluetooth::connectToDevice(BLEAdvertisedDevice* advertisedDevice){
 
         auto sensorValue = sc->getCharacteristic(BLEUUID((uint16_t)0x2A5B));
         if(sensorValue && sensorValue->canNotify()){
-            sensorValue->registerForNotify([](BLERemoteCharacteristic* pBLERemoteCharacteristic, uint8_t* pData, size_t length, bool isNotify) {
-                Serial.print("Notification received: "); // bit 0: wheel revolutions bit, bit 1: crank evolutions bit
-                for(size_t i = 0; i < length; i++) {
-                    Serial.print(pData[i]);
-                    Serial.print(" ");
+            sensorValue->registerForNotify([this, &client](BLERemoteCharacteristic* pBLERemoteCharacteristic, uint8_t* pData, size_t length, bool isNotify) {
+                uint8_t flags = pData[0];
+                size_t offset = 1;
+
+                uint32_t newWheelRevs = client.prevWheelRevs;
+                uint16_t newWheelTime = client.prevWheelTime;
+                uint16_t newCrankRevs = client.prevCrankRevs;
+                uint16_t newCrankTime = client.prevCrankTime;
+
+                if(flags & 0x01){
+                    newWheelRevs = (uint32_t)pData[offset] | ((uint32_t)pData[offset+1] << 8) | ((uint32_t)pData[offset+2] << 16) | ((uint32_t)pData[offset+3] << 24);
+                    newWheelTime = (uint16_t)pData[offset+4] | ((uint16_t)pData[offset+5] << 8); offset += 6;
                 }
-                Serial.println();
+
+                if(flags & 0x02){
+                    newCrankRevs = (uint16_t)pData[offset] | ((uint16_t)pData[offset+1] << 8); 
+                    newCrankTime = (uint16_t)pData[offset+2] | ((uint16_t)pData[offset+3] << 8);
+                }
+
+                if(flags & 0x01){
+                    double speedKmh = calculateSpeedKmh(newWheelRevs, client.prevWheelRevs, newWheelTime, client.prevWheelTime, client.wheelCircumferenceMeters);
+                    client.lastSpeedKmh = speedKmh;
+                    client.prevWheelRevs = newWheelRevs;
+                    client.prevWheelTime = newWheelTime;
+                }
+
+                if(flags & 0x02){
+                    double cadanceRpm = calculateCadenceRPM(newCrankRevs, client.prevCrankRevs, newCrankTime, client.prevCrankTime);
+                    client.lastCadanceRpm = cadanceRpm;
+                    client.prevCrankRevs = newCrankRevs;
+                    client.prevCrankTime = newCrankTime;
+                }
+
+                if(flags & 0x01)
+                { 
+                    Serial.print(" Speed(km/h): "); 
+                    Serial.print(client.lastSpeedKmh); 
+                }
+                
+                if(flags & 0x02)
+                { 
+                    Serial.print(" Cadence(RPM): "); 
+                    Serial.print(client.lastCadanceRpm); 
+                }
             });
         }
     }

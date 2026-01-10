@@ -22,15 +22,23 @@ class Bluetooth{
             bool cadance;
             bool speed;
             BLEAdvertisedDevice *targetDevice;
-        };
 
-        
-        uint8_t cadanceValue;
-        uint8_t speedValue;
+            uint32_t prevWheelRevs = 0;
+            uint16_t prevWheelTime = 0;
+            uint16_t prevCrankRevs = 0;
+            uint16_t prevCrankTime = 0;
+
+            double lastSpeedKmh = 0.0;
+            double lastCadanceRpm = 0.0;
+
+            double wheelCircumferenceMeters = 2.105;
+        };
     public:
         BLEAdvertisedDevice *targetDevice; // pointer voor het device dat gebruikt wordt door de client
         std::vector<BleClients> clients;
         uint8_t hrValue;
+        uint16_t cadanceValue;
+        float speedValue;
         uint8_t* hrPtr = &hrValue;
 
         Bluetooth();

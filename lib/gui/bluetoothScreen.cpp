@@ -31,12 +31,16 @@ void makeBleScreen(){
 }
 
 void updateBleScreen(){
+    lv_table_set_row_count(bleScreen, 1);
     bleSensors.startScan();
 
     uint8_t devicesCount = 1;
 
     for(int i = 0; i < bleSensors.getScanResults().getCount(); i++){
         BLEAdvertisedDevice device = bleSensors.getScanResults().getDevice(i);
+
+        lv_table_set_row_count(bleScreen, devicesCount + 1);
+
         lv_table_set_cell_value(bleScreen, devicesCount, 0, device.getName().c_str());
         lv_table_set_cell_value(bleScreen, devicesCount, 1, device.getAddress().toString().c_str());
         devicesCount++;
