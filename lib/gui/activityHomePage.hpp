@@ -8,6 +8,8 @@ extern Bluetooth bleSensors;
 
 extern std::string typeActivity;
 
+void ActivityStartEvent(lv_event_t *e);
+
 void makeActivityHomePage();
 void updateActivityHomePage(lv_event_t* e);
 

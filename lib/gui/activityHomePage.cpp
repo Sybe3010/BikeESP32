@@ -10,6 +10,16 @@ lv_obj_t *activityHomeRoute;
 lv_obj_t *activityHomeSensors;
 lv_obj_t *activityHomeOpties;
 
+void ActivityStartEvent(lv_event_t *e){
+    if(typeActivity == "Road"){
+
+    } else if(typeActivity == "Gravel"){
+
+    } else if(typeActivity == "MTB"){
+        
+    }
+}
+
 
 void makeActivityHomePage(){
     activityHomeScreen = lv_obj_create(NULL);
@@ -23,6 +33,8 @@ void makeActivityHomePage(){
     activityHomeMainBox = lv_button_create(activityHomeScreen);
     lv_obj_set_pos(activityHomeMainBox, 32, 88);
     lv_obj_set_size(activityHomeMainBox, 256, 135);
+    lv_obj_add_event_cb(activityHomeMainBox, ActivityStartEvent, LV_EVENT_CLICKED, NULL);
+
     // Startpijl label
     lv_obj_t* startLabelActHome = lv_label_create(activityHomeMainBox);
     // Statuslabels in activitymainbox
