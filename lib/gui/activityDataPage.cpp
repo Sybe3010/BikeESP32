@@ -1,6 +1,9 @@
 #include "activityDataPage.hpp"
 
-ActivityDataPage::ActivityDataPage(){}
+Maps activityMap = Maps();
+
+ActivityDataPage::ActivityDataPage(){
+}
 
 ActivityDataPage::ActivityDataPage(DataPageLayout layout){
     _layout = layout;
@@ -74,6 +77,71 @@ void ActivityDataPage::createDataPage(){
     }
 
     //lv_obj_add_event_cb(dataPage, ActivityDataPage::updateDataPageInformation, LV_EVENT_VALUE_CHANGED, NULL);
+}
+
+void ActivityDataPage::create2WidgetAndMap(){
+    activityMap.initMap(320, 480);  // Match canvas size
+    activityMap.createMapScrSprites();
+
+    lv_obj_t *activityMapCanvas;
+    activityMapCanvas = lv_canvas_create(dataPage);
+    lv_obj_set_size(activityMapCanvas, 320, 480);
+    lv_obj_set_pos(activityMapCanvas, 0, 0);    
+
+    activityMap.generateMap(15);
+    
+    if(activityMap.redrawMap){
+        activityMap.displayMap();
+        // Byte swap toepassen op de RGB565 buffer voor juiste kleurweergave
+        lv_draw_sw_rgb565_swap(activityMap.mapBuffer, 320 * 480);
+
+        // Buffer instellen op canvas
+        lv_canvas_set_buffer(activityMapCanvas, activityMap.mapBuffer, 320, 480, LV_COLOR_FORMAT_RGB565);
+    }
+
+    widgets[0].widget.createWidget(128, 115, 20, 32, widgets[0].typeOfData);
+    widgets[0].widget.createWidgetLabel(10, 10);
+
+    widgets[1].widget.createWidget(128, 115, 174, 32, widgets[0].typeOfData);
+    widgets[1].widget.createWidgetLabel(10, 10);
+}
+
+void ActivityDataPage::create5Widget(){
+    widgets[0].widget.createWidget(128, 115, 20, 32, widgets[1].typeOfData);
+    widgets[0].widget.createWidgetLabel(10, 10);
+
+    widgets[1].widget.createWidget(128, 115, 174, 32, widgets[1].typeOfData);
+    widgets[1].widget.createWidgetLabel(10, 10);
+
+    widgets[2].widget.createWidget(282, 115, 20, 182, widgets[1].typeOfData);
+    widgets[2].widget.createWidgetLabel(10, 10);
+
+    widgets[3].widget.createWidget(128, 115, 20, 332, widgets[1].typeOfData);
+    widgets[3].widget.createWidgetLabel(10, 10);
+
+    widgets[4].widget.createWidget(128, 115, 174, 332, widgets[1].typeOfData);
+    widgets[4].widget.createWidgetLabel(10, 10);
+}
+
+void ActivityDataPage::create6Widget(){
+
+     widgets[0].widget.createWidget(128, 115, 20, 32, widgets[1].typeOfData);
+    widgets[0].widget.createWidgetLabel(10, 10);
+
+    widgets[1].widget.createWidget(128, 115, 174, 32, widgets[1].typeOfData);
+    widgets[1].widget.createWidgetLabel(10, 10);
+
+    widgets[2].widget.createWidget(128, 115, 20, 182, widgets[1].typeOfData);
+    widgets[2].widget.createWidgetLabel(10, 10);
+
+    widgets[3].widget.createWidget(128, 115, 174, 182, widgets[1].typeOfData);
+    widgets[3].widget.createWidgetLabel(10, 10);
+
+    widgets[4].widget.createWidget(128, 115, 20, 332, widgets[1].typeOfData);
+    widgets[4].widget.createWidgetLabel(10, 10);
+
+    widgets[5].widget.createWidget(128, 115, 174, 332, widgets[1].typeOfData);
+    widgets[5].widget.createWidgetLabel(10, 10);
 }
 
 void ActivityDataPage::updateDataPageInformation(lv_event_t *e){

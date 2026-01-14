@@ -12,7 +12,8 @@ lv_obj_t *activityHomeOpties;
 
 void ActivityStartEvent(lv_event_t *e){
     if(typeActivity == "Road"){
-
+        createActivityPage();
+        lv_screen_load(activityPage);
     } else if(typeActivity == "Gravel"){
 
     } else if(typeActivity == "MTB"){
@@ -79,7 +80,6 @@ void makeActivityHomePage(){
 
     lv_timer_t* testBLEtimer = lv_timer_create(updateBLeTest, 1000, NULL);
     lv_timer_ready(gpsTimer);
-
 }
 
 void updateBLeTest(lv_timer_t * t){

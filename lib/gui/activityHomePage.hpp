@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include "globalGuiDef.h"
 #include "bluetooth.hpp"
+#include "activityPage.hpp"
 
 extern Bluetooth bleSensors;
 

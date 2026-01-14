@@ -3,6 +3,9 @@
 #include "globalGuiDef.h"
 
 #include "gpx.hpp"
+#include "maps.hpp"
+
+extern Maps maps;
 
 extern lv_obj_t *routePreviewCanvas;
 extern lv_obj_t *gpxDetailsScreenBackButton;
@@ -24,6 +27,7 @@ extern GpxParser details;
 
 void makeGpxDetailsScreen();
 void fillGpxDetailsScreen();
+void startRouteEvent(lv_event_t *e);
 void drawElevationChartEvent(lv_event_t *e);
 void add_faded_area(lv_event_t * e);
 void gpxDetailsBackButtonEvent(lv_event_t *e);

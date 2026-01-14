@@ -75,6 +75,7 @@ void makeGpxDetailsScreen(){
     routeStartButton = lv_button_create(gpxDetailsScreen);
     lv_obj_set_size(routeStartButton, 120, 70);
     lv_obj_set_pos(routeStartButton, 180, 375);
+    //lv_obj_add_event_cb(routeStartButton, startRouteEvent, LV_EVENT_CLICKED, NULL);
 
     //Labels
     routeLenghtLabel = lv_label_create(routeLenghtBox);
@@ -97,6 +98,8 @@ void fillGpxDetailsScreen(){
     for(i = 0; i < details.elevationProfile.size(); i++) {
         lv_chart_set_next_value(routeElevationChart, elevationSerie, details.elevationProfile[i].elevation);
     }
+
+    maps.displayGpxRoute(details.trackData);
 }
 
 void drawElevationChartEvent(lv_event_t *e){

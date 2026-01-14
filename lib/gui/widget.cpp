@@ -7,12 +7,11 @@ Widget::Widget(lv_obj_t* parent){
 void Widget::changeWidgetData(const char* data){
     lv_label_set_text(widgetLabel, data);
 }
-void Widget::createWidget(int sizeX, int sizeY, int posX, int posY, const char* widgetType){
+void Widget::createWidget(int sizeX, int sizeY, int posX, int posY, typeData type){
     _sizeX = sizeX;
     _sizeY = sizeY;
     _posX = posX;
     _posY = posY;
-    _widgetName = widgetType;
 
     widget = lv_obj_create(_parent);
     lv_obj_set_size(widget, _sizeX, _sizeY);
@@ -29,4 +28,9 @@ void Widget::createWidgetLabel(int posX, int posY){
 
     widgetLabel = lv_label_create(widget);
     lv_obj_set_pos(widgetLabel, labelX, labelY);
+    lv_label_set_text(widgetLabel, "Test Widget");
+}
+
+void Widget::setBgOpacity(lv_opa_t opa){
+    lv_obj_set_style_opa(widget, opa, LV_STYLE_BG_GRAD_OPA);
 }

@@ -1,30 +1,14 @@
 #pragma once
 
 #include "globalGuiDef.h"
-#include "widget.hpp"
+#include "smallWidget.hpp"
+#include "activityGlobal.h"
+#include "maps.hpp"
 
 #include <vector>
 
 class ActivityDataPage{ // 1 pagina object
     private:
-        enum DataPageLayout{
-            MAP_AND_2_WIDGETS,
-            NO_MAP_AND_5_WIDGETS,
-            NO_MAP_AND_6_WIDGETS
-        };
-
-        enum typeData{
-            ACTIVITY_TIMER,
-            ACTIVITY_HEART_RATE,
-            ACTIVITY_CADANCE,
-            ACTIVITY_SPEED,
-            ACTIVITY_POWER,
-            ACTIVITY_REMAINING_KM_ON_ROUTE,
-            ACTIVITY_ELAPSED_DISTANCE,
-            ACTIVITY_AVG_SPEED,
-            ACTIVITY_AVG_CADANCE
-        };
-
         bool isDataPageLoaded;
         bool isMapVisible;
     
@@ -33,8 +17,6 @@ class ActivityDataPage{ // 1 pagina object
         uint8_t _dataPageIndex;
 
         DataPageLayout _layout = NO_MAP_AND_6_WIDGETS;
-
-        lv_obj_t *dataPage;
 
         struct WidgetsOnDataPage{
             Widget widget;
@@ -48,6 +30,8 @@ class ActivityDataPage{ // 1 pagina object
         void create5Widget();
         void create6Widget();
     public:
+        lv_obj_t *dataPage;
+
         ActivityDataPage();
         ActivityDataPage(DataPageLayout layout);
         ActivityDataPage(DataPageLayout layout, bool customData);

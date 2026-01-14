@@ -232,7 +232,7 @@ void Maps::generateMap(uint8_t zoom){
         }
         else {
             Maps::totalBounds = Maps::getTileBounds(Maps::currentMapTile.tilex, Maps::currentMapTile.tiley, Maps::zoomLevel);
-
+            Maps::mainTileBounds = Maps::totalBounds;
             const int8_t startX = -1;
             const int8_t startY = -1;
 
@@ -274,7 +274,7 @@ void Maps::generateMap(uint8_t zoom){
     }
 }
 
-/// @brief Toont de gegenereerde kaart op het scher
+/// @brief Toont de gegenereerde kaart op het scherm
 /// @note Deze functie tekent de kaart sprite op het scherm. Als de GPS-volgmodus is ingeschakeld, wordt ook een navigatiepijl getekend op de huidige GPS-locatie.
 void Maps::displayMap(){
     if(!Maps::isMapFound){ // geen map gevonden
@@ -301,6 +301,86 @@ void Maps::displayMap(){
                                         Maps::mapTileSize + Maps::navArrowPosition.posY,
                                          4, TFT_RED);
         }
+
+        if(_waypoints.size() > 2){
+            for(size_t i = 0; i < _waypoints.size() - 1; i++){
+                const auto& waypoint1 = _waypoints[i];
+                const auto& waypoint2 = _waypoints[i + 1];
+
+                bool waypoint1InTotalBounds = isCoordInBounds(waypoint1.lat, waypoint1.lon, totalBounds);
+                bool waypoint2InTotalBounds = isCoordInBounds(waypoint2.lat, waypoint2.lon, totalBounds);
+
+                if(!waypoint1InTotalBounds || !waypoint2InTotalBounds){
+                    continue;
+                }
+
+                bool waypoint1InMainBounds = isCoordInBounds(waypoint1.lat, waypoint1.lon, mainTileBounds);
+                bool waypoint2InMainBounds = isCoordInBounds(waypoint2.lat, waypoint2.lon, mainTileBounds);
+
+                bool inRoundTiles = false;
+
+                if(!waypoint1InMainBounds || !waypoint2InMainBounds){
+                    inRoundTiles = true;
+                }
+
+                ScreenCoord begin = coord2ScreenPos(waypoint1.lon, waypoint1.lat, zoomLevel, Maps::mapTileSize);
+                ScreenCoord einde = coord2ScreenPos(waypoint2.lon, waypoint2.lat, zoomLevel, Maps::mapTileSize);
+
+                uint16_t offset = mapTileSize;
+
+                uint16_t offSetX1 = mapTileSize;
+                uint16_t offSetY1 = mapTileSize;
+                uint16_t offSetX2 = mapTileSize;
+                uint16_t offSetY2 = mapTileSize;
+                if(!inRoundTiles){
+                    mapTempSprite.drawWideLine( offset + begin.posX,
+                                                offset + begin.posY,
+                                                offset + einde.posX,
+                                                offset + einde.posY,
+                                                2,
+                                                TFT_BLACK);
+                } else {
+                    if (waypoint1.lon < mainTileBounds.lon_min) {
+                        offSetX1 = 0;
+                    } else if (waypoint1.lon > mainTileBounds.lon_max) {
+                        offSetX1 = 2 * mapTileSize;
+                    } else if (waypoint1.lon == mainTileBounds.lon_min || waypoint1.lon == mainTileBounds.lon_max){
+                        offSetX1 = mapTileSize;
+                    }
+
+                    if (waypoint1.lat > mainTileBounds.lat_max) {
+                        offSetY1 = 0;
+                    } else if (waypoint1.lat < mainTileBounds.lat_min) {
+                        offSetY1 = 2 * mapTileSize;
+                    } else if (waypoint1.lat == mainTileBounds.lat_min || waypoint1.lat == mainTileBounds.lat_max){
+                        offSetY1 = mapTileSize;
+                    }
+
+                    if (waypoint2.lon < mainTileBounds.lon_min) {
+                        offSetX2 = 0;
+                    } else if (waypoint2.lon > mainTileBounds.lon_max) {
+                        offSetX2 = 2 * mapTileSize;
+                    } else if (waypoint2.lon == mainTileBounds.lon_min || waypoint2.lon == mainTileBounds.lon_max){
+                        offSetX2 = mapTileSize;
+                    }
+
+                    if (waypoint2.lat > mainTileBounds.lat_max) {
+                        offSetY2 = 0;
+                    } else if (waypoint2.lat < mainTileBounds.lat_min) {
+                        offSetY2 = 2 * mapTileSize;
+                    } else if (waypoint2.lat == mainTileBounds.lat_min || waypoint2.lat == mainTileBounds.lat_max){
+                        offSetY2 = mapTileSize;
+                    }
+                    mapTempSprite.drawWideLine( offSetX1 + begin.posX,
+                                                offSetY1 + begin.posY,
+                                                offSetX2 + einde.posX,
+                                                offSetY2 + einde.posY,
+                                                2,
+                                                TFT_BLACK);
+                }
+            } 
+        }
+        
         if(Maps::turnOnGpsHeading){ // GPS heading aan
             Maps::mapTempSprite.setPivot(Maps::mapTileSize + Maps::navArrowPosition.posX,
                                      Maps::mapTileSize + Maps::navArrowPosition.posY);
@@ -331,3 +411,7 @@ void Maps::centerOnGps(float lat, float lon)
     Maps::currentMapTile.lat = lat;
     Maps::currentMapTile.lon = lon;
 }
+
+void Maps::displayGpxRoute(std::vector<wayPoint> waypoints){
+    _waypoints = waypoints;
+} 

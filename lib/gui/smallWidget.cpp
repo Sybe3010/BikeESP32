@@ -4,7 +4,7 @@ SmallWidget::SmallWidget(lv_obj_t * parent) : Widget(parent){
 
 }
 
-void SmallWidget::createSmallWidget(int col, int row, const char*type){
+void SmallWidget::createSmallWidget(int col, int row, typeData type){
     switch (col)
     {
         case 1:

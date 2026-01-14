@@ -1,8 +1,9 @@
 #pragma once
 
 #include <Arduino.h>
+#include <vector>
 #include "tft.hpp"
-
+#include "globalGpxDef.h"
 #include "gps.hpp"
 
 static const char *mapRenderFolder PROGMEM = "/sdcard/MAP/%u/%u/%u.png"; /**< De plaats waar de kaart tiles staan op de sd kaart. */
@@ -40,8 +41,12 @@ class Maps {
         TFT_eSprite mapTempSprite = TFT_eSprite(&tft);                              /**< volledige map sprite (not showed) */
         TFT_eSprite mapSprite = TFT_eSprite(&tft);                                  /**< getoonde map sprite */
         tileBounds totalBounds;                                                     /**< totale grenzen van de getoonde kaart */
+        tileBounds mainTileBounds;
 
         ScreenCoord navArrowPosition; 												/**< plaats van gebruiker op de kaart*/
+
+
+        std::vector<wayPoint> _waypoints;
 
         static uint16_t lon2posx(float f_lon, uint8_t zoom, uint16_t tileSize);
         static uint16_t lat2posy(float f_lat, uint8_t zoom, uint16_t tileSize);
@@ -82,4 +87,6 @@ class Maps {
         void displayMap();
         void updateMap();
         void centerOnGps(float lat, float lon);
+
+        void displayGpxRoute(std::vector<wayPoint> waypoints);
 };

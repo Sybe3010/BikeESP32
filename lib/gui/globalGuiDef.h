@@ -25,3 +25,5 @@ extern lv_timer_t *gpsTimer;
 
 // Activityhomepage
 extern lv_obj_t *activityHomeScreen;
+
+extern lv_obj_t *activityPage;

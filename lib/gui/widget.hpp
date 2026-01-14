@@ -1,6 +1,7 @@
 #pragma once
 
 #include "globalGuiDef.h"
+#include "activityGlobal.h"
 
 #include "Arduino.h"
 
@@ -9,9 +10,11 @@ class Widget{
         Widget(){}
         Widget(lv_obj_t* parent);
 
-        void createWidget(int sizeX, int sizeY, int posX, int posY, const char* widgetType);
+        void createWidget(int sizeX, int sizeY, int posX, int posY, typeData type);
         void createWidgetLabel(int posX, int posY);
         void changeWidgetData(const char* data);
+
+        void setBgOpacity(lv_opa_t opa);
     private:
         int _sizeX;
         int _sizeY;
