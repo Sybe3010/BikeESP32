@@ -288,8 +288,8 @@ void Maps::displayMap(){
     const uint16_t size = Maps::mapTileSize; 
 
     if(Maps::followGps){ // GPS volgmodus aan
-        const float lat = gps.gpsData.latitude;    //51.252376;
-        const float lon = gps.gpsData.longitude;   //4.438024;
+        float lat = gps.gpsData.latitude;    //51.252376;
+        float lon = gps.gpsData.longitude;   //4.438024;
         Maps::navArrowPosition = Maps::coord2ScreenPos(lon, lat, Maps::zoomLevel, Maps::mapTileSize); // bereken positie van gebruiker op de kaart
         if(Maps::zoomLevel >= 15){ // grote zoomniveau, grotere pijl
             Maps::mapTempSprite.fillCircle(Maps::mapTileSize + Maps::navArrowPosition.posX,

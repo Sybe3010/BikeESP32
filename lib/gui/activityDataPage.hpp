@@ -24,13 +24,16 @@ class ActivityDataPage{ // 1 pagina object
             uint8_t widgetId;
         };
 
-        std::vector<WidgetsOnDataPage> widgets;
+        
+
+        static void event_cb(lv_event_t *e);
 
         void create2WidgetAndMap();
         void create5Widget();
         void create6Widget();
     public:
         lv_obj_t *dataPage;
+        std::vector<WidgetsOnDataPage> widgets;
 
         ActivityDataPage();
         ActivityDataPage(DataPageLayout layout);

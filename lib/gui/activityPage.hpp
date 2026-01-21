@@ -3,5 +3,10 @@
 
 #include "activityDataPage.hpp"
 #include "globalGuiDef.h"
+#include "activity.hpp"
+
+extern Activity* newActivity;
 
 void createActivityPage();
+void updateScreen(lv_event_t *e);
+void updateScreenData(lv_timer_t *t);

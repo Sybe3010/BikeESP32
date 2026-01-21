@@ -1,5 +1,7 @@
 #include "activityHomePage.hpp"
 
+Activity* newActivity = nullptr;
+
 lv_obj_t *activityHomeScreen;
 
 std::string typeActivity;
@@ -10,8 +12,25 @@ lv_obj_t *activityHomeRoute;
 lv_obj_t *activityHomeSensors;
 lv_obj_t *activityHomeOpties;
 
+std::string generateGpsFileName() {
+    auto now = std::chrono::system_clock::now();
+    std::time_t t = std::chrono::system_clock::to_time_t(now);
+
+    std::tm tm{};
+    localtime_r(&t, &tm);
+
+    std::ostringstream oss;
+    oss << std::put_time(&tm, "%Y-%m-%d-%H-%M-%S") << ".gpx";
+
+    return oss.str();
+}
+
+
 void ActivityStartEvent(lv_event_t *e){
     if(typeActivity == "Road"){
+        std::string fileName = "/sdcard/TRK/" + generateGpsFileName();
+        newActivity = new Activity(fileName.c_str());
+        newActivity->startActivity();
         createActivityPage();
         lv_screen_load(activityPage);
     } else if(typeActivity == "Gravel"){

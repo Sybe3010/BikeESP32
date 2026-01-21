@@ -9,10 +9,31 @@ bool Activity::startActivity(){
         return true;
     } else {
         createActivityFile();
-        isStarted = true;
-        return true;
+		const esp_timer_create_args_t activity_timer_args = { .callback = &ActivityTimer, .arg = this, .name = "activityTimer" };
+ 		esp_timer_handle_t activity_timer; 
+  		esp_timer_create(&activity_timer_args, &activity_timer);
+  		esp_timer_start_periodic(activity_timer, 1000000); // 1000000 µs = 1 s
+		isStarted = true;
+		return true;
     }
-    
+}
+
+void Activity::ActivityTimer(void *arg){
+	Activity* activity = static_cast<Activity*>(arg);
+	if(activity->isStarted){
+		activity->totalData.timer += 1;
+		ActivityPoint ap;
+		ap.lat = gps.gpsData.latitude;
+		ap.lon = gps.gpsData.longitude;
+		ap.ele = gps.gpsData.altitude;
+		ap.speed = gps.gpsData.speed;
+		ap.cadance = bleSensors.cadanceValue;
+		ap.hartrate = bleSensors.hrValue;
+		ap.power = 0;
+		activity->addActivityPoint(ap);
+
+		activity->uiNeedsUpdate = true;
+	}
 }
 
 bool Activity::addActivityPoint(const ActivityPoint& point){
