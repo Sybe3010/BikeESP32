@@ -32,16 +32,17 @@ void setup() {
   storage.initSD(); // initialiseer de SD kaart
   storage.initSPIFFS(); // initialiseer SPIFFS
 
-  initTFT(); // initialiseer het TFT scherm
-
-  bleSensors.init(); // initialiseer Bluetooth
-
   if(!storage.exists("/sdcard/TRK")){ // Controleer of de map TRK bestaat anders maak deze aan
     if(!storage.mkdir("/sdcard/TRK")){
       tft.fillScreen(TFT_RED); // Fout bij het aanmaken van de map, vul het scherm met rood
     }
   }
   
+
+  initTFT(); // initialiseer het TFT scherm
+
+  bleSensors.init(); // initialiseer Bluetooth
+
   initLVGL(); // initialiseer LVGL
 
 
@@ -67,7 +68,7 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   lv_timer_handler(); // LVGL taak handler
-  delay(5); // kleine delay om de CPU niet te overbelasten.
+  delay(1); // Kleine delay (1ms ipv 5ms) voor beter timing met LVGL tick
 }
 
 

@@ -2,8 +2,12 @@
 
 TFT_eSPI tft = TFT_eSPI(); // maak een nieuw TFT_eSPI object aan
 
+extern Storage storage; 
+
 uint16_t TFT_WIDTH = 0;
 uint16_t TFT_HEIGHT = 0;
+
+bool repeatCalibration = false;
 
 lv_display_t *display; // maak een lvgl display object aan
 
@@ -21,7 +25,42 @@ void initTFT()
   tft.initDMA(); // Zet direct memory access aan voor snellere scherm updates
   tft.fillScreen(TFT_BLACK);
 
-  tft.calibrateTouch(nullptr, TFT_WHITE, TFT_BLACK, std::max(tft.width(), tft.height()) >> 3);
+
+  // Touchscreen kalibreren
+  uint16_t calData[8];
+  uint8_t calDataOK = 0;
+
+  FILE* f = storage.open(calibrationFile, "r");
+  if(f != NULL){
+    if(repeatCalibration){
+      remove(calibrationFile);
+    } else {
+      if (fread((char *)calData, sizeof(char), 16, f))
+      {
+          calDataOK = 1;
+          storage.close(f);
+      }
+    }
+  }
+
+  if (calDataOK && !repeatCalibration)
+  {
+    tft.setTouchCalibrate(calData);
+  }
+  else
+  {
+    tft.calibrateTouch(calData, TFT_WHITE, TFT_BLACK, std::max(tft.width(), tft.height()) >> 3);
+    FILE* f = storage.open(calibrationFile, "w");
+    if (f)
+    {
+        log_v("Calibration saved");
+        fwrite((const unsigned char *)calData, sizeof(unsigned char), 16 ,f);
+        storage.close(f);
+    }
+    else{
+        log_e("Failed to open calibration file for writing");
+    }
+  }
   // Kalibreer het touchscreen: nadien nog de kalibratiewaarden opslaan op de SD kaart
 }
 
@@ -36,6 +75,10 @@ void IRAM_ATTR displayFlush(lv_display_t *disp, const lv_area_t *area, uint8_t *
   tft.setSwapBytes(true);
   tft.setAddrWindow(area->x1, area->y1, w, h);
   tft.pushImageDMA(area->x1, area->y1, area->x2 - area->x1 + 1, area->y2 - area->y1 + 1, (uint16_t*)px_map);
+  
+  // Wacht tot DMA transfer klaar is
+  tft.waitDMA();
+  
   tft.setSwapBytes(false);
 
   lv_display_flush_ready(disp);
@@ -76,7 +119,7 @@ void initLVGL()
   // Maak een display aan voor LVGL
   display = lv_display_create(TFT_WIDTH, TFT_HEIGHT);
   lv_display_set_flush_cb(display, displayFlush);
-  lv_display_set_flush_wait_cb(display, NULL);
+  lv_display_set_flush_wait_cb(display, [](lv_display_t *disp){ tft.waitDMA(); });
 
   size_t DRAW_BUF_SIZE = 0;
   DRAW_BUF_SIZE = TFT_WIDTH * TFT_HEIGHT * sizeof(lv_color_t);

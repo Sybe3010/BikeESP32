@@ -6,6 +6,9 @@
 #include "maps.hpp"
 
 #include <vector>
+#include <freertos/portmacro.h>
+
+extern portMUX_TYPE canvasLock;
 
 class ActivityDataPage{ // 1 pagina object
     private:
@@ -17,6 +20,9 @@ class ActivityDataPage{ // 1 pagina object
         uint8_t _dataPageIndex;
 
         DataPageLayout _layout = NO_MAP_AND_6_WIDGETS;
+
+        lv_obj_t* activityMapCanvas = nullptr;
+        lv_timer_t* activityMapTimer = nullptr;
 
         struct WidgetsOnDataPage{
             Widget widget;
@@ -34,10 +40,13 @@ class ActivityDataPage{ // 1 pagina object
     public:
         lv_obj_t *dataPage;
         std::vector<WidgetsOnDataPage> widgets;
+        
+        lv_obj_t* activityMapCanvas_public() { return activityMapCanvas; }
 
         ActivityDataPage();
         ActivityDataPage(DataPageLayout layout);
         ActivityDataPage(DataPageLayout layout, bool customData);
+        ~ActivityDataPage();
 
         void setWidgetTypes(typeData widget1, typeData widget2);
         void setWidgetTypes(typeData widget1, typeData widget2, typeData widget3, typeData widget4, typeData widget5);

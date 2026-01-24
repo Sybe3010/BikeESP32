@@ -3,6 +3,7 @@
 #include <Arduino.h>
 
 #include "display.hpp"
+#include "storage.hpp"
 #include <lvgl.h>
 #include <LGFX_TFT_eSPI.hpp>
 
@@ -10,6 +11,7 @@
 
 extern TFT_eSPI tft;
 
+static const char* calibrationFile PROGMEM = "/sdcard/TouchCal"; /**< Touch calibration file path */
 
 extern uint16_t TFT_WIDTH;
 extern uint16_t TFT_HEIGHT;

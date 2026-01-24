@@ -6,6 +6,12 @@
 #include "Arduino.h"
 #include <vector>
 
+#include "bluetooth.hpp"
+#include "activity.hpp"
+
+extern Bluetooth bleSensors;
+extern Activity* newActivity;
+
 class Widget{
     public:
         Widget(){}
