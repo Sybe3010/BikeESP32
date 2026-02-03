@@ -16,8 +16,7 @@
 #include "gpxDetailScreen.hpp"
 #include "bluetoothScreen.hpp"
 #include "activityHomePage.hpp"
-
-#include "activity.hpp"
+#include "activityPage.hpp"
 
 extern GPS gps; // Gebruik het GPS object dat al is aangemaakt
 extern Maps maps; // Gebruik het Maps object dat al is aangemaakt
@@ -41,6 +40,12 @@ void setup() {
       tft.fillScreen(TFT_RED); // Fout bij het aanmaken van de map, vul het scherm met rood
     }
   }
+
+  if(!storage.exists("/sdcard/ACT")){ // Controleer of de map TRK bestaat anders maak deze aan
+    if(!storage.mkdir("/sdcard/ACT")){
+      tft.fillScreen(TFT_RED); // Fout bij het aanmaken van de map, vul het scherm met rood
+    }
+  }
   
   initLVGL(); // initialiseer LVGL
 
@@ -52,6 +57,7 @@ void setup() {
   makeGpxListScreen(); // maak het GPX lijst scherm
   makeGpxDetailsScreen(); // maak het GPX detail scherm
   makeBleScreen(); // maak het Bluetooth scherm
+  createActivityPage();
   
 
   lv_screen_load(homeScreen); // laad het homescreen

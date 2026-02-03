@@ -3,7 +3,6 @@
 #include <Arduino.h>
 #include "globalGuiDef.h"
 #include "bluetooth.hpp"
-#include "activityPage.hpp"
 #include "activity.hpp"
 #include <chrono>
 

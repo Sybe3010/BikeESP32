@@ -264,8 +264,8 @@ void GpxParser::getElevationProfile(){
 /// Het gebruikt drempelwaarden voor maximale negatieve helling en toegestane daling om te bepalen of een segment als klim wordt beschouwdµ
 /// Het valideert ook klimsegmenten op basis van hun lengte en gemiddelde helling voordat ze worden toegevoegd aan de lijst
 void GpxParser::detectClimbs(){
-    const float maxNegativeGrade = -0.01; // Maximale negatieve helling om als kleine daling te worden beschouwd
-    const float mapDropAllowed = 5.0f; // Maximale toegestane daling in meters binnen een klimsegment
+    const float maxNegativeGrade = -0.015; // Maximale negatieve helling om als kleine daling te worden beschouwd
+    const float mapDropAllowed = 10.0f; // Maximale toegestane daling in meters binnen een klimsegment
 
     bool climbing = false; // Huidige staat: in een klimsegment of niet
     size_t climbStart = 0; // Startindex van het huidige klimsegment
@@ -325,14 +325,14 @@ void GpxParser::detectClimbs(){
 
                 bool valid = false;
                 
-                if(segment.totalDistance < 100){ // Korte klimsegmenten vereisen een steilere helling
-                    if(segment.avgGrade > 0.05f){
+                if(segment.totalDistance < 200){ // Korte klimsegmenten vereisen een steilere helling
+                    if(segment.avgGrade > 0.035f){
                         valid = true;
                     } else{
                         valid = false;
                     }
                 } else{ // Langere klimsegmenten hebben een lagere drempel voor helling
-                    if(segment.avgGrade > 0.03f){
+                    if(segment.avgGrade > 0.015f){
                         valid = true;
                     } else {
                         valid = false;
@@ -364,14 +364,14 @@ void GpxParser::detectClimbs(){
 
                 bool valid = false;
                 
-                if(segment.totalDistance < 100){ // Korte klimsegmenten vereisen een steilere helling
-                    if(segment.avgGrade > 0.05f){
+                if(segment.totalDistance < 200){ // Korte klimsegmenten vereisen een steilere helling
+                    if(segment.avgGrade > 0.035f){
                         valid = true;
                     } else{
                         valid = false;
                     }
                 } else{ // Langere klimsegmenten hebben een lagere drempel voor helling
-                    if(segment.avgGrade > 0.03f){
+                    if(segment.avgGrade > 0.015f){
                         valid = true;
                     } else {
                         valid = false;
@@ -404,14 +404,14 @@ void GpxParser::detectClimbs(){
 
         bool valid = false;
         
-        if(segment.totalDistance < 100){ // Korte klimsegmenten vereisen een steilere helling
-            if(segment.avgGrade > 0.05f){
+        if(segment.totalDistance < 200){ // Korte klimsegmenten vereisen een steilere helling
+            if(segment.avgGrade > 0.035f){
                 valid = true;
             } else{
                 valid = false;
             }
         } else{ //  Langere klimsegmenten hebben een lagere drempel voor helling
-            if(segment.avgGrade > 0.03f){
+            if(segment.avgGrade > 0.015f){
                 valid = true;
             } else {
                 valid = false;

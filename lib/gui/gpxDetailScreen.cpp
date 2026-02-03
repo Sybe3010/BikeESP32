@@ -64,8 +64,8 @@ void makeGpxDetailsScreen(){
     lv_obj_set_style_radius(routeElevationChart, 0, 0);
     lv_obj_center(routeElevationChart);
     lv_obj_remove_flag(routeElevationChart, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_add_event_cb(routeElevationChart, drawElevationChartEvent, LV_EVENT_DRAW_TASK_ADDED, NULL);
-    lv_obj_add_flag(routeElevationChart, LV_OBJ_FLAG_SEND_DRAW_TASK_EVENTS);
+    //lv_obj_add_event_cb(routeElevationChart, drawElevationChartEvent, LV_EVENT_DRAW_TASK_ADDED, NULL);
+    //lv_obj_add_flag(routeElevationChart, LV_OBJ_FLAG_SEND_DRAW_TASK_EVENTS);
     elevationSerie = lv_chart_add_series(routeElevationChart, lv_palette_main(LV_PALETTE_GREEN), LV_CHART_AXIS_PRIMARY_Y);
 
     moreDetailsButton = lv_button_create(gpxDetailsScreen);
@@ -92,14 +92,14 @@ void fillGpxDetailsScreen(){
     lv_label_set_text_fmt(routeLenghtLabel, "Lenght: %.1f km", details.trackLenght / 1000);
     lv_label_set_text_fmt(routeAscentLabel, "Ascent: %.1f m", details.totalAscent);
     
-    lv_obj_add_flag(routeElevationChart, LV_OBJ_FLAG_SEND_DRAW_TASK_EVENTS);
+    //lv_obj_add_flag(routeElevationChart, LV_OBJ_FLAG_SEND_DRAW_TASK_EVENTS);
     lv_chart_set_point_count(routeElevationChart, details.elevationProfile.size());
     uint32_t i;
     for(i = 0; i < details.elevationProfile.size(); i++) {
         lv_chart_set_next_value(routeElevationChart, elevationSerie, details.elevationProfile[i].elevation);
     }
 
-    maps.displayGpxRoute(details.trackData);
+    activityMap.displayGpxRoute(details.trackData);
 }
 
 void drawElevationChartEvent(lv_event_t *e){
@@ -108,7 +108,6 @@ void drawElevationChartEvent(lv_event_t *e){
 
     if(base_dsc->part == LV_PART_ITEMS && lv_draw_task_get_type(draw_task) == LV_DRAW_TASK_TYPE_LINE) {
         add_faded_area(e);
-
     }
 }
 void add_faded_area(lv_event_t * e)

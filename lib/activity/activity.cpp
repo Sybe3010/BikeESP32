@@ -10,7 +10,6 @@ bool Activity::startActivity(){
     } else {
         createActivityFile();
 		const esp_timer_create_args_t activity_timer_args = { .callback = &ActivityTimer, .arg = this, .name = "activityTimer" };
- 		esp_timer_handle_t activity_timer; 
   		esp_timer_create(&activity_timer_args, &activity_timer);
   		esp_timer_start_periodic(activity_timer, 1000000); // 1000000 µs = 1 s
 		isStarted = true;
@@ -126,6 +125,18 @@ bool Activity::writeGpxData(const ActivityPoint& ap){
 void Activity::calculateActivityData(){
 
 }
+
+bool Activity::stopActivity(){
+	if(!isStarted){
+		return true;
+	} else {
+		isStarted = false;
+		esp_timer_delete(activity_timer);
+		return true;
+	}
+}
+
+
 
 std::string Activity::formatFloat(float value, int precision) 
 {

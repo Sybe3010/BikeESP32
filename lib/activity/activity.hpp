@@ -9,7 +9,6 @@
 #include <sstream>
 #include "tinyxml2.h"
 #include "storage.hpp"
-#include "globalGuiDef.h"
 #include "bluetooth.hpp"
 #include "gps.hpp"
 
@@ -84,6 +83,7 @@ class Activity{
         std::vector<ActivityPoint> _activityPoints;
         ActivityData totalData;
         bool isStarted = false;
+        esp_timer_handle_t activity_timer; 
 
         static void ActivityTimer(void *arg);
         bool createActivityFile();

@@ -6,6 +6,7 @@
 #include "maps.hpp"
 
 extern Maps maps;
+extern Maps activityMap;
 
 extern lv_obj_t *routePreviewCanvas;
 extern lv_obj_t *gpxDetailsScreenBackButton;

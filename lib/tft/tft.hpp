@@ -5,11 +5,13 @@
 #include "display.hpp"
 #include <lvgl.h>
 #include <LGFX_TFT_eSPI.hpp>
+#include "storage.hpp"
 
 #define TOUCH_MAX_POINTS 5
 
 extern TFT_eSPI tft;
 
+static const char* calibrationFile PROGMEM = "/sdcard/TouchCal"; /**< Touch calibration file path */
 
 extern uint16_t TFT_WIDTH;
 extern uint16_t TFT_HEIGHT;

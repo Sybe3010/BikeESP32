@@ -28,10 +28,10 @@ std::string generateGpsFileName() {
 
 void ActivityStartEvent(lv_event_t *e){
     if(typeActivity == "Road"){
-        std::string fileName = "/sdcard/TRK/" + generateGpsFileName();
+        std::string fileName = "/sdcard/ACT/" + generateGpsFileName();
         newActivity = new Activity(fileName.c_str());
-        newActivity->startActivity();
-        createActivityPage();
+        //newActivity->startActivity();
+        lv_obj_send_event(activityPage, LV_EVENT_VALUE_CHANGED, NULL);
         lv_screen_load(activityPage);
     } else if(typeActivity == "Gravel"){
 
