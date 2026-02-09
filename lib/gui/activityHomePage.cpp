@@ -30,7 +30,7 @@ void ActivityStartEvent(lv_event_t *e){
     if(typeActivity == "Road"){
         std::string fileName = "/sdcard/ACT/" + generateGpsFileName();
         newActivity = new Activity(fileName.c_str());
-        //newActivity->startActivity();
+        newActivity->startActivity();
         lv_obj_send_event(activityPage, LV_EVENT_VALUE_CHANGED, NULL);
         lv_screen_load(activityPage);
     } else if(typeActivity == "Gravel"){
@@ -76,6 +76,7 @@ void makeActivityHomePage(){
     lv_obj_set_pos(activityRouteLabel, 14, 11);
     lv_obj_set_style_text_font(activityRouteLabel, &lv_font_montserrat_26, 0);
     lv_label_set_text(activityRouteLabel, "Route");
+    lv_obj_add_event_cb(activityHomeRoute, actHomeSetRoute, LV_EVENT_CLICKED, NULL);
  
     /// Sensors button
     activityHomeSensors = lv_button_create(activityHomeScreen);
@@ -103,6 +104,12 @@ void makeActivityHomePage(){
 
 void updateBLeTest(lv_timer_t * t){
     lv_label_set_text(activityHomeTitel, String(bleSensors.hrValue).c_str());
+}
+
+void actHomeSetRoute(lv_event_t* e){
+    log_e("actHomescreen pointer: %p", activityHomeScreen);
+    lv_obj_send_event(gpxListScreen, LV_EVENT_REFRESH, activityHomeScreen);
+    lv_screen_load(gpxListScreen);
 }
 
 void updateActivityHomePage(lv_event_t* e){

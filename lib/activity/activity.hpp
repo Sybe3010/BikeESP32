@@ -11,6 +11,7 @@
 #include "storage.hpp"
 #include "bluetooth.hpp"
 #include "gps.hpp"
+#include <lvgl.h>
 
 extern Storage storage;
 extern GPS gps;
@@ -57,12 +58,12 @@ class Activity{
         };
 
         struct ActivityData{
-            int timer;
-            float distance;
-            float avgSpeed;
-            int avgCadance;
-            int avgHR;
-            int avgPower;
+            uint16_t timer = 0;
+            float distance = 0;
+            float avgSpeed = 0;
+            uint16_t avgCadance = 0;
+            uint8_t avgHR = 0;
+            uint16_t avgPower = 0;
         };
         bool uiNeedsUpdate = false;
 
@@ -83,12 +84,17 @@ class Activity{
         std::vector<ActivityPoint> _activityPoints;
         ActivityData totalData;
         bool isStarted = false;
-        esp_timer_handle_t activity_timer; 
 
-        static void ActivityTimer(void *arg);
+        ActivityPoint _lastActivityPoint;
+
+        lv_timer_t *activityTimer;
+
         bool createActivityFile();
         bool writeGpxData(const ActivityPoint& ap);
         void calculateActivityData();
+        float getDistance(float lon1, float lat1, float lon2, float lat2, float h1, float h2); // Haversine formule om afstand te berekenen tussen twee GPS punten
+
+        static void activityTimerUpdate(lv_timer_t *t);
 
         std::string formatFloat(float value, int precision);
 };

@@ -9,16 +9,16 @@ bool Activity::startActivity(){
         return true;
     } else {
         createActivityFile();
-		const esp_timer_create_args_t activity_timer_args = { .callback = &ActivityTimer, .arg = this, .name = "activityTimer" };
-  		esp_timer_create(&activity_timer_args, &activity_timer);
-  		esp_timer_start_periodic(activity_timer, 1000000); // 1000000 µs = 1 s
+		activityTimer = lv_timer_create(activityTimerUpdate, 1000, this);
 		isStarted = true;
+		_lastActivityPoint.lat = 0;
+		_lastActivityPoint.lon = 0;
 		return true;
     }
 }
 
-void Activity::ActivityTimer(void *arg){
-	Activity* activity = static_cast<Activity*>(arg);
+void Activity::activityTimerUpdate(lv_timer_t *t){
+	Activity* activity = static_cast<Activity*>(lv_timer_get_user_data(t));
 	if(activity->isStarted){
 		activity->totalData.timer += 1;
 		ActivityPoint ap;
@@ -31,8 +31,36 @@ void Activity::ActivityTimer(void *arg){
 		ap.power = 0;
 		activity->addActivityPoint(ap);
 
+		float plusAfstand = 0;
+		if(activity->_lastActivityPoint.lat != 0 || activity->_lastActivityPoint.lon != 0){
+			plusAfstand = activity->getDistance(activity->_lastActivityPoint.lon, activity->_lastActivityPoint.lat, ap.lon, ap.lat, activity->_lastActivityPoint.ele, ap.ele);
+		}
+		
+		activity->totalData.distance += plusAfstand;
+
+		activity->_lastActivityPoint = ap;
 		activity->uiNeedsUpdate = true;
 	}
+}
+
+float Activity::getDistance(float lon1, float lat1, float lon2, float lat2, float h1, float h2){
+    float R = 6371000; //straal van de aarde in meters
+
+    lon1 = lon1 * M_PI / 180;
+    lat1 = lat1 * M_PI / 180;
+    lon2 = lon2 * M_PI / 180;
+    lat2 = lat2 * M_PI / 180;
+
+    float dlon = lon2 - lon1;
+    float dlat = lat2 - lat1;
+
+    float a = sin(dlat/2) * sin(dlat/2) + cos(lat1) * cos(lat2) * sin(dlon/2) * sin(dlon/2);
+
+    float dHorizontal = 2 * R * asin(sqrt(a));
+
+    float dH = h2 - h1;
+
+    return sqrt(dHorizontal * dHorizontal + dH* dH);
 }
 
 bool Activity::addActivityPoint(const ActivityPoint& point){
@@ -131,7 +159,7 @@ bool Activity::stopActivity(){
 		return true;
 	} else {
 		isStarted = false;
-		esp_timer_delete(activity_timer);
+		lv_timer_delete(activityTimer);
 		return true;
 	}
 }

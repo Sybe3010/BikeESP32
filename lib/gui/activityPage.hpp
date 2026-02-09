@@ -1,8 +1,8 @@
 #pragma once
 
 #include "activityGlobal.h"
-#include "activity.hpp"
 #include "globalGuiDef.h"
+#include "activity.hpp"
 #include "maps.hpp"
 #include "bluetooth.hpp"
 #include "gpx.hpp"
@@ -45,6 +45,9 @@ extern lv_obj_t *browsePrevBtn;
 extern lv_obj_t *actMenuBtn;
 
 extern lv_timer_t* activityUITimer;
+
+
+extern std::string trackFileName;
 
 // Create page function
 void createActivityPage();

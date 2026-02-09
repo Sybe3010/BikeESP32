@@ -41,6 +41,31 @@ GPS::GPSData GPS::getAllData(){
         data.precisionH = gps.hdop.hdop();
         data.satellites = gps.satellites.value();
 
+        if(gps.satellites.value() >= 4){
+            setGpsTime();
+        }
+
         return data;
     }
+}
+
+void GPS::setGpsTime()
+{
+    getAllData();
+    struct tm tm;
+    tm.tm_year = gps.date.year() - 1900; 
+    tm.tm_mon = gps.date.month() - 1;      // FIX: Maand moet 0-11 zijn (0 = Jan)
+    tm.tm_mday = gps.date.day();           // Dit is correct (1-31)
+    tm.tm_hour = gps.time.hour();          
+    tm.tm_min = gps.time.minute();           
+    tm.tm_sec = gps.time.second();            
+    tm.tm_isdst = -1;                      // TIP: Laat het systeem DST bepalen
+
+    time_t t = mktime(&tm);
+    struct timeval now = { .tv_sec = t };
+    settimeofday(&now, NULL);
+
+    log_e("Systeemklok ingesteld op: %04d-%02d-%02d %02d:%02d:%02d\n", 
+                  tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, 
+                  tm.tm_hour, tm.tm_min, tm.tm_sec);
 }

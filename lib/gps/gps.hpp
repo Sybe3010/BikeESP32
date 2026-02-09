@@ -2,6 +2,7 @@
 
 #include <Arduino.h>
 #include <TinyGPSPlus.h>
+#include <chrono>
 
 #define GPS_SERIAL_RX_PIN 9
 #define GPS_SERIAL_TX_PIN 14
@@ -26,5 +27,6 @@ class GPS
 
         GPS();
         void begin(unsigned long baud); // Initialiseer de GPS module met de opgegeven baudrate
+        void setGpsTime();
         GPSData getAllData(); // Haal alle GPS data op
 };

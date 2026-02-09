@@ -2,7 +2,9 @@
 
 Maps activityMap = Maps();
                 
-GpxParser activityTrack("/sdcard/TRK/2462188412.gpx");
+GpxParser *activityTrack = nullptr;
+
+std::string trackFileName;
 
 lv_obj_t *activityPage;
 
@@ -43,7 +45,7 @@ lv_obj_t *actMenuBtn;
 lv_chart_series_t * elevationSerieAct;
 
 bool activityStarted = false;
-bool trackLoaded = true;
+bool trackLoaded = false;
 bool climbViewActive = true;
 lv_timer_t* activityUITimer;
 
@@ -52,7 +54,6 @@ void createActivityPage(){
     lv_obj_set_pos(activityPage, 0, 0);
     lv_obj_set_size(activityPage, 320, 460);
     lv_obj_add_event_cb(activityPage,   activityPageController, LV_EVENT_ALL, NULL);
-
 
     activityPageTileView = lv_tileview_create(activityPage);
     activityPageMapTile = lv_tileview_add_tile(activityPageTileView, 0, 1, (lv_dir_t)(LV_DIR_RIGHT | LV_DIR_BOTTOM | LV_DIR_TOP));
@@ -70,6 +71,7 @@ void createActivityPage(){
     createClimbViewTile();
 
     createBrowseButtons();
+
 }
 
 void createMapTile(){
@@ -86,9 +88,9 @@ void createMapTile(){
     lv_obj_add_event_cb(mapDataWidget1,   activityPageController, LV_EVENT_ALL, NULL);
 
     lv_obj_t *mapWidget1Label = lv_label_create(mapDataWidget1);
-    lv_label_set_text(mapWidget1Label, "Map Widget 1");
+    lv_label_set_text(mapWidget1Label, "Heart Rate");
     lv_obj_t *mapWidget1Value = lv_label_create(mapDataWidget1);
-    lv_label_set_text(mapWidget1Value, "Value 1");
+    lv_label_set_text(mapWidget1Value, "Heart Rate");
     lv_obj_set_pos(mapWidget1Value, 10, 30);
     
 
@@ -98,7 +100,7 @@ void createMapTile(){
     lv_obj_add_event_cb(mapDataWidget2,   activityPageController, LV_EVENT_ALL, NULL);
 
     lv_obj_t *mapWidget2Label = lv_label_create(mapDataWidget2);
-    lv_label_set_text(mapWidget2Label, "Map Widget 1");
+    lv_label_set_text(mapWidget2Label, "Speed");
     lv_obj_t *mapWidget2Value = lv_label_create(mapDataWidget2);
     lv_label_set_text(mapWidget2Value, "Value 1");
     lv_obj_set_pos(mapWidget2Value, 10, 30);
@@ -111,7 +113,7 @@ void createDataTile(){
     lv_obj_add_event_cb(dataWidget1,   activityPageController, LV_EVENT_ALL, NULL);
 
     lv_obj_t *mapDataWidget2Label = lv_label_create(dataWidget1);
-    lv_label_set_text(mapDataWidget2Label, "Map Widget 2");
+    lv_label_set_text(mapDataWidget2Label, "Timer");
     lv_obj_t *mapDataWidget2Value = lv_label_create(dataWidget1);
     lv_label_set_text(mapDataWidget2Value, "Value 2");
     lv_obj_set_pos(mapDataWidget2Value, 10, 30);
@@ -124,7 +126,7 @@ void createDataTile(){
     lv_obj_add_event_cb(dataWidget2,   activityPageController, LV_EVENT_ALL, NULL);
 
     lv_obj_t *dataWidget2Label = lv_label_create(dataWidget2);
-    lv_label_set_text(dataWidget2Label, "Data Widget 2");
+    lv_label_set_text(dataWidget2Label, "Distance");
     lv_obj_t *dataWidget2Value = lv_label_create(dataWidget2);
     lv_label_set_text(dataWidget2Value, "Value 2");
     lv_obj_set_pos(dataWidget2Value, 10, 30);
@@ -137,7 +139,7 @@ void createDataTile(){
     lv_obj_add_event_cb(dataWidget3,   activityPageController, LV_EVENT_ALL, NULL);
 
     lv_obj_t *dataWidget3Label = lv_label_create(dataWidget3);
-    lv_label_set_text(dataWidget3Label, "Data Widget 3");
+    lv_label_set_text(dataWidget3Label, "Cadance");
     lv_obj_t *dataWidget3Value = lv_label_create(dataWidget3);
     lv_label_set_text(dataWidget3Value, "Value 3");
     lv_obj_set_pos(dataWidget3Value, 10, 30);
@@ -150,7 +152,7 @@ void createDataTile(){
     lv_obj_add_event_cb(dataWidget4,   activityPageController, LV_EVENT_ALL, NULL);
 
     lv_obj_t *dataWidget4Label = lv_label_create(dataWidget4);
-    lv_label_set_text(dataWidget4Label, "Data Widget 4");
+    lv_label_set_text(dataWidget4Label, "Speed");
     lv_obj_t *dataWidget4Value = lv_label_create(dataWidget4);
     lv_label_set_text(dataWidget4Value, "Value 4");
     lv_obj_set_pos(dataWidget4Value, 10, 30);
@@ -162,7 +164,7 @@ void createStatsTile(){
     lv_obj_add_event_cb(statsWidget1,   activityPageController, LV_EVENT_ALL, NULL);
 
     lv_obj_t *statWidget1Label = lv_label_create(statsWidget1);
-    lv_label_set_text(statWidget1Label, "Stat Label 1");
+    lv_label_set_text(statWidget1Label, "Avg Speed");
     lv_obj_t *statWidget1Value = lv_label_create(statsWidget1);
     lv_label_set_text(statWidget1Value, "Value 1");
     lv_obj_set_pos(statWidget1Value, 10, 30);
@@ -174,7 +176,7 @@ void createStatsTile(){
     lv_obj_add_event_cb(statsWidget2,   activityPageController, LV_EVENT_ALL, NULL);
 
     lv_obj_t *statWidget2Label = lv_label_create(statsWidget2);
-    lv_label_set_text(statWidget2Label, "Stat Label 2");
+    lv_label_set_text(statWidget2Label, "Avg Cadance");
     lv_obj_t *statWidget2Value = lv_label_create(statsWidget2);
     lv_label_set_text(statWidget2Value, "Value 2");
     lv_obj_set_pos(statWidget2Value, 10, 30);
@@ -186,7 +188,7 @@ void createStatsTile(){
     lv_obj_add_event_cb(statsWidget3,   activityPageController, LV_EVENT_ALL, NULL);
 
     lv_obj_t *statWidget3Label = lv_label_create(statsWidget3);
-    lv_label_set_text(statWidget3Label, "Stat Label 3");
+    lv_label_set_text(statWidget3Label, "Distance left");
     lv_obj_t *statWidget3Value = lv_label_create(statsWidget3);
     lv_label_set_text(statWidget3Value, "Value 3");
     lv_obj_set_pos(statWidget3Value, 10, 30);
@@ -198,7 +200,7 @@ void createStatsTile(){
     lv_obj_add_event_cb(statsWidget4,   activityPageController, LV_EVENT_ALL, NULL);
 
     lv_obj_t *statWidget4Label = lv_label_create(statsWidget4);
-    lv_label_set_text(statWidget4Label, "Stat Label 4");
+    lv_label_set_text(statWidget4Label, "Timer");
     lv_obj_t *statWidget4Value = lv_label_create(statsWidget4);
     lv_label_set_text(statWidget4Value, "Value 4");
     lv_obj_set_pos(statWidget4Value, 10, 30);
@@ -244,10 +246,23 @@ void createClimbViewTile(){
     lv_obj_set_pos(climbViewWidget1, 10, 320);
     lv_obj_add_event_cb(climbViewWidget1,   activityPageController, LV_EVENT_ALL, NULL);
 
+    lv_obj_t *climbView1Label = lv_label_create(climbViewWidget1);
+    lv_label_set_text(climbView1Label, "Climb Label 1");
+    lv_obj_t *climbView1Value = lv_label_create(climbViewWidget1);
+    lv_label_set_text(climbView1Value, "Value 1");
+    lv_obj_set_pos(climbView1Value, 10, 30);
+
+
     climbViewWidget2 = lv_obj_create(activityPageClimbView);
     lv_obj_set_size(climbViewWidget2, 128, 115);
     lv_obj_set_pos(climbViewWidget2, 174, 320);
     lv_obj_add_event_cb(climbViewWidget2,   activityPageController, LV_EVENT_ALL, NULL);
+
+    lv_obj_t *climbView2Label = lv_label_create(climbViewWidget2);
+    lv_label_set_text(climbView2Label, "Climb Label 2");
+    lv_obj_t *climbView2Value = lv_label_create(climbViewWidget2);
+    lv_label_set_text(climbView2Value, "Value 2");
+    lv_obj_set_pos(climbView2Value, 10, 30);
 }
 void createBrowseButtons(){
     browseNextBtn = lv_button_create(activityPage);
@@ -314,9 +329,15 @@ void activityPageController(lv_event_t *e){
         if(target == activityPage && activityStarted == false){
             activityStarted = true;
             activityUITimer = lv_timer_create(activityUIUpdateTimer, 1000, NULL);
+            if(trackFileName != ""){
+                activityTrack = new GpxParser(trackFileName.c_str());
+                trackLoaded = true;
+            } else {
+                trackLoaded = false;
+            }
             if(trackLoaded == true){
                 log_e("Track wordt geladen.");
-                activityTrack.loadTrack();
+                activityTrack->loadTrack();
             }
         }
     }
@@ -338,22 +359,39 @@ void activityPageController(lv_event_t *e){
             }
             if(target == mapDataWidget2){
                 lv_obj_t* label = lv_obj_get_child(target, 1);
-                lv_label_set_text_fmt(label, "%.1f", (double)gps.gpsData.speed);
+                if(bleSensors.speedValue > 0){
+                    lv_label_set_text_fmt(label, "%.1f", (double)bleSensors.speedValue);
+                } else {
+                    lv_label_set_text_fmt(label, "%.1f", (double)gps.gpsData.speed);
+                }
             }
         }
 
         if(activeTileController == activityPageDataTile){
             if(target == dataWidget1){
-                // Update widget 1 data
+                lv_obj_t* label = lv_obj_get_child(target, 1);
+                int sec, min, hours;
+                sec = newActivity->getActivityData().timer;
+                min = sec/60;
+                hours = min/60;
+                lv_label_set_text_fmt(label, "%d:%d:%d", hours, int(min%60), int(sec%60));
+                log_e("sec: %d", sec);
             }
             if(target == dataWidget2){
-                // Update widget 2 data
+                lv_obj_t* label = lv_obj_get_child(target, 1);
+                lv_label_set_text_fmt(label, "%.1f", newActivity->getActivityData().distance);
             }
             if(target == dataWidget3){
-                // Update widget 3 data
+                lv_obj_t* label = lv_obj_get_child(target, 1);
+                lv_label_set_text_fmt(label, "%d", bleSensors.cadanceValue);
             }
             if(target == dataWidget4){
-                // Update widget 4 data
+                lv_obj_t* label = lv_obj_get_child(target, 1);
+                if(bleSensors.speedValue > 0){
+                    lv_label_set_text_fmt(label, "%.1f", (double)bleSensors.speedValue);
+                } else {
+                    lv_label_set_text_fmt(label, "%.1f", (double)gps.gpsData.speed);
+                }
             }
         }
 
@@ -365,30 +403,38 @@ void activityPageController(lv_event_t *e){
                 // Update widget 2 data
             }
             if(target == statsWidget3){
-                // Update widget 3 data
+                // Distance left
             }
             if(target == statsWidget4){
-                // Update widget 4 data
+                lv_obj_t* label = lv_obj_get_child(target, 1);
+                int sec, min, hours;
+                sec = newActivity->getActivityData().timer;
+                min = sec/60;
+                hours = min/60;
+                lv_label_set_text_fmt(label, "%d:%d:%d", hours, int(min%60), int(sec%60));
             }
         }
 
         if(activeTileController == activityPageClimbView && climbViewActive){
             if(target == climbGraph){
-                size_t startIndexClimb;
-                size_t endIndexClimb;
-                if(activityTrack.climbs.size() > 0){
-                    log_e("climbs beschikbaar: %d", activityTrack.climbs.size());
-                    startIndexClimb = activityTrack.climbs[0].startIndex;
-                    endIndexClimb = activityTrack.climbs[0].endIndex;
+                if(activityTrack != nullptr){
+                    size_t startIndexClimb;
+                    size_t endIndexClimb;
+                    if(activityTrack->climbs.size() > 0){
+                        log_e("climbs beschikbaar: %d", activityTrack->climbs.size());
+                        startIndexClimb = activityTrack->climbs[0].startIndex;
+                        endIndexClimb = activityTrack->climbs[0].endIndex;
 
-                    // zet de climbs op de grafiek
-                    lv_chart_set_point_count(climbGraph, endIndexClimb - startIndexClimb + 1);
-                    for(uint32_t i = startIndexClimb; i < endIndexClimb; i++) {
-                        lv_chart_set_next_value(climbGraph, elevationSerieAct, activityTrack.elevationProfile[i].elevation);
+                        // zet de climbs op de grafiek
+                        lv_chart_set_point_count(climbGraph, endIndexClimb - startIndexClimb + 1);
+                        for(uint32_t i = startIndexClimb; i < endIndexClimb; i++) {
+                            lv_chart_set_next_value(climbGraph, elevationSerieAct, activityTrack->elevationProfile[i].elevation);
+                        }
+                    } else {
+                        log_e("geen climbs beschikbaar");
                     }
-                } else {
-                    log_e("geen climbs beschikbaar");
                 }
+                
             }
             if(target == climbViewWidget1){
                 
@@ -403,10 +449,16 @@ void activityPageController(lv_event_t *e){
 void activityUIUpdateTimer(lv_timer_t* timer){
     lv_obj_t* activeTile = lv_tileview_get_tile_active(activityPageTileView);
 
+    if(activeTile == activityPageQuickSettingsTile){
+        return;
+    }
+
     if(activeTile == activityPageMapTile){
         // Map updaten
         activityMap.generateMap(15);
-        activityMap.displayGpxRoute(activityTrack.trackData);
+        if(activityTrack != nullptr){
+            activityMap.displayGpxRoute(activityTrack->trackData);
+        }
         if(activityMap.redrawMap){
             activityMap.displayMap();
             // Byte swap toepassen op de RGB565 buffer voor juiste kleurweergave
@@ -433,10 +485,6 @@ void activityUIUpdateTimer(lv_timer_t* timer){
         lv_obj_send_event(statsWidget2, LV_EVENT_REFRESH, NULL);
         lv_obj_send_event(statsWidget3, LV_EVENT_REFRESH, NULL);
         lv_obj_send_event(statsWidget4, LV_EVENT_REFRESH, NULL);
-        return;
-    }
-
-    if(activeTile == activityPageQuickSettingsTile){
         return;
     }
 

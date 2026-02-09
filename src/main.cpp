@@ -48,6 +48,7 @@ void setup() {
   }
   
   initLVGL(); // initialiseer LVGL
+  gps.setGpsTime();
 
 
   /// GUI schermen aanmaken /// (nadien nog in initLVGL zetten.)

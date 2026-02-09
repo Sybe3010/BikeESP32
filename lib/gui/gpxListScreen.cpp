@@ -2,6 +2,8 @@
 
 lv_obj_t *gpxListScreen;
 
+lv_obj_t *backScreen;
+
 // Globale variabelen moeten elders correct gedeclareerd en geïnitialiseerd zijn:
 // extern String trkFolder;
 // extern String gpxFileFolder;
@@ -43,6 +45,9 @@ void gpxListEvent(lv_event_t* e) {
 
         gpxFileFolder = String(trkFolder) + "/" + gpxFile;
 
+        if(backScreen == activityHomeScreen){
+            trackFileName = std::string(trkFolder) + "/" + (std::string)gpxFile.c_str();
+        }
         // Zorg dat gpxDetailsScreen geldig is
         if(gpxDetailsScreen != NULL) {
             fillGpxDetailsScreen();
@@ -50,11 +55,27 @@ void gpxListEvent(lv_event_t* e) {
         }
     } 
     if(code == LV_EVENT_GESTURE){
-        lv_dir_t direction =  lv_indev_get_gesture_dir(lv_indev_active());
-        if(direction = LV_DIR_LEFT){
-            lv_screen_load(homeScreen);
+        if(backScreen == nullptr){
+            lv_dir_t direction =  lv_indev_get_gesture_dir(lv_indev_active());
+            if(direction = LV_DIR_LEFT){
+                lv_screen_load(homeScreen);
+            }
         }
+        if(backScreen == activityHomeScreen){
+            lv_dir_t direction =  lv_indev_get_gesture_dir(lv_indev_active());
+            if(direction = LV_DIR_LEFT){
+                lv_screen_load(backScreen);
+            }
+        }
+        
     }
+    if (code == LV_EVENT_REFRESH)
+    {
+        log_e("list screen refresh aangeroepen");
+        backScreen = (lv_obj_t*)lv_event_get_param(e);
+        log_e("backscreen pointer: %p", backScreen);
+    }
+    
 }
 
 void makeGpxListScreen() {
