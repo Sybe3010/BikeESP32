@@ -4,16 +4,13 @@ An open-source GPS-enabled bike computer built on the ESP32 microcontroller. Bik
 
 ## Features
 
-- **GPS Tracking**: Real-time positioning and activity recording with elevation data
-- **Bluetooth Sensor Integration**: Connect wireless sensors for:
-  - Heart rate monitors (BLE HRM)
-  - Cadence sensors (BLE CSC)
-  - Power meters (BLE PWR)
-- **TFT Display**: 320×480 pixel touchscreen interface with multiple screens
-- **Map Visualization**: On-device map rendering with tile-based system and zoom control
-- **Activity Recording**: Automatic logging of cycling activities in GPX format (compatible with Strava, Garmin, etc.)
+- **GPS Tracking**: Real-time positioning and activity recording with elevation data (see [GPS documentation](lib/gps/README.md))
+- **Bluetooth Sensor Integration**: Connect wireless heart rate, cadence, and power sensors (see [Bluetooth documentation](lib/bluetooth/README.md))
+- **TFT Display**: Interactive touchscreen interface with multiple screens (see [GUI documentation](lib/gui/README.md))
+- **Map Visualization**: On-device map rendering with tile-based system and zoom control (see [Maps documentation](lib/maps/README.md))
+- **Activity Recording**: Automatic logging of cycling activities in GPX format (see [Activity documentation](lib/activity/README.md))
 - **LVGL GUI Framework**: Responsive and customizable user interface
-- **Storage**: SD card support for map tiles and activity storage, plus internal SPIFFS
+- **Storage**: SD card support for map tiles and activity storage, plus internal SPIFFS (see [Storage documentation](lib/storage/README.md))
 
 ## Hardware Requirements
 
@@ -91,42 +88,26 @@ BikeESP32/
 | [TinyGPSPlus](https://github.com/mikalhart/TinyGPSPlus) | GPS data parsing | 1.1.0 |
 | [tinyxml2](https://github.com/leethomason/tinyxml2) | GPX file generation | Latest |
 
-## Supported BLE Sensors
+## Module Documentation
 
-The device auto-detects and connects to standard Bluetooth Low Energy sensors:
+Each module has dedicated documentation. Refer to these for detailed implementation, API usage, and customization:
 
-- **Heart Rate Monitors**: GATT Profile 180D (HRM)
-- **Cadence/Speed Sensors**: GATT Profile 1816 (CSC)
-- **Power Meters**: GATT Profile 1818 (PWR)
-
-See [Bluetooth documentation](lib/bluetooth/README.md) for connection details.
-
-## Building Additional Features
-
-- **Custom Map Sources**: Replace tile PNG files in `/sdcard/MAP/` directory
-- **GPS Simulation**: Uncomment `GPS_SIMULATOR` flag in `platformio.ini` for testing without hardware
-- **Screen Customization**: Modify screen definitions in `lib/gui/` (LVGL-based)
-
-See individual module documentation:
-- [GPS Module](lib/gps/README.md)
-- [Maps Module](lib/maps/README.md)
-- [Storage Module](lib/storage/README.md)
-- [Activity Recording](lib/activity/README.md)
+| Module | Purpose | Documentation |
+|--------|---------|-----------------|
+| **Activity** | Activity recording and GPX export | [README](lib/activity/README.md) |
+| **Bluetooth** | BLE sensor connections and data streaming | [README](lib/bluetooth/README.md) |
+| **GPS** | GPS parsing and real-time positioning | [README](lib/gps/README.md) |
+| **GPX** | GPX file format handling | [README](lib/gpx/README.md) |
+| **GUI** | LVGL screens and user interface | [README](lib/gui/README.md) |
+| **Maps** | Map rendering and tile management | [README](lib/maps/README.md) |
+| **Storage** | SD card and SPIFFS file operations | [README](lib/storage/README.md) |
+| **TFT** | Display initialization and graphics | [README](lib/tft/README.md) |
 
 ## Hardware Notes
 
 - **PSRAM Required**: The device uses external PSRAM for map rendering and GUI buffers
 - **USB CDC**: Serial communication enabled for debugging and updates
 - **Touchscreen Support**: Some TFT displays support capacitive touch (configured in TFT initialization)
-
-## Troubleshooting
-
-- **No GPS Signal**: Verify antenna connection and wait 30+ seconds in open sky
-- **Display Not Initializing**: Check TFT wiring and confirm LovyanGFX driver configuration
-- **Bluetooth Not Connecting**: Ensure sensor is in pairing mode and within range
-- **SD Card Not Detected**: Verify SD card is formatted and inserted properly
-
-For detailed debugging, enable serial output at 9600 baud.
 
 ## Contributing
 
@@ -151,9 +132,10 @@ This project is open source. See LICENSE file for details.
 
 ## Support
 
-- **GitHub Issues**: Report bugs and request features [here](https://github.com/yourusername/BikeESP32/issues)
-- **Documentation**: See module-specific README files in `lib/` directories
+- **GitHub Issues**: Report bugs and request features [here](https://github.com/Sybe3010/BikeESP32/issues)
+- **Module Documentation**: See [Module Documentation](#module-documentation) section above for detailed guides on each component
 - **Serial Debugging**: Connect via USB and monitor serial output at 9600 baud
+- **Contributing**: See [Contributing](#contributing) section below
 
 ## Acknowledgments
 
