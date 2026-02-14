@@ -22,7 +22,7 @@ lv_obj_t *backButton;
 lv_obj_t *accountButton;
 lv_obj_t *bluetoothButton;
 lv_obj_t *moreSettingsButton;
-lv_obj_t *brightnessOptionBtn;
+lv_obj_t *brightnessSlider;
 lv_obj_t *mapOptionBtn;
 lv_obj_t *activityOptionBtn;
 lv_obj_t *touchscreenOptionBtn;
@@ -51,9 +51,6 @@ void moreSettingsBtnEvent(lv_event_t * e){
 
 }
 
-void brightnessOptionBtnEvent(lv_event_t * e){
-
-}
 void mapOptionBtnEvent(lv_event_t * e){
 
 }
@@ -192,9 +189,12 @@ void makeHomeScreen(){
     lv_label_set_text(optionsTitle, "Options");
     lv_obj_set_pos(optionsTitle, 32, 25);
 
-    brightnessOptionBtn = lv_button_create(optionsTile);
-    lv_obj_set_size(brightnessOptionBtn, 256, 96);
-    lv_obj_set_pos(brightnessOptionBtn, 32, 70);
+    brightnessSlider = lv_slider_create(optionsTile);
+    lv_obj_set_width(brightnessSlider,TFT_WIDTH - 80);
+    lv_obj_set_pos(brightnessSlider, 32, 70);
+    lv_slider_set_range(brightnessSlider, 5, 255);
+    lv_slider_set_value(brightnessSlider, 255, LV_ANIM_OFF);
+    lv_obj_add_event_cb(brightnessSlider, changeBrightnessEvent, LV_EVENT_VALUE_CHANGED, NULL);
 
     mapOptionBtn = lv_button_create(optionsTile);
     lv_obj_set_size(mapOptionBtn, 256, 96);
@@ -209,9 +209,9 @@ void makeHomeScreen(){
     lv_obj_set_pos(touchscreenOptionBtn, 32, 388);
 
     //Labels voor options buttons
-    lv_obj_t* brightnessLabel = lv_label_create(brightnessOptionBtn);
+    lv_obj_t* brightnessLabel = lv_label_create(optionsTile);
     lv_label_set_text(brightnessLabel, "Brightness settings");
-    lv_obj_set_pos(brightnessLabel,  30, 20);
+    lv_obj_set_pos(brightnessLabel,  32, 60);
     lv_obj_t* mapLabel = lv_label_create(mapOptionBtn);
     lv_label_set_text(mapLabel, "Map settings");
     lv_obj_set_pos(mapLabel,  30, 20);
@@ -223,8 +223,13 @@ void makeHomeScreen(){
     lv_obj_set_pos(touchscreenLabel,  30, 20);
 
     // Events voor options buttons
-    lv_obj_add_event_cb(brightnessOptionBtn, brightnessOptionBtnEvent, LV_EVENT_CLICKED, NULL);
     lv_obj_add_event_cb(mapOptionBtn, mapOptionBtnEvent, LV_EVENT_CLICKED, NULL);
     lv_obj_add_event_cb(activityOptionBtn, activityOptionBtnEvent, LV_EVENT_CLICKED, NULL);
     lv_obj_add_event_cb(touchscreenOptionBtn, touchscreenOptionBtnEvent, LV_EVENT_CLICKED, NULL);
+}
+
+void changeBrightnessEvent(lv_event_t *e){
+    lv_obj_t *obj =(lv_obj_t*) lv_event_get_target(e);
+    uint8_t defBright =  lv_slider_get_value(obj);
+    tft.setBrightness(defBright);
 }

@@ -18,6 +18,7 @@ bool Activity::startActivity(){
 }
 
 void Activity::activityTimerUpdate(lv_timer_t *t){
+	uint32_t startTime = millis();
 	Activity* activity = static_cast<Activity*>(lv_timer_get_user_data(t));
 	if(activity->isStarted){
 		activity->totalData.timer += 1;
@@ -31,15 +32,25 @@ void Activity::activityTimerUpdate(lv_timer_t *t){
 		ap.power = 0;
 		activity->addActivityPoint(ap);
 
+		uint32_t dataWrite = millis() - startTime;
+
 		float plusAfstand = 0;
-		if(activity->_lastActivityPoint.lat != 0 || activity->_lastActivityPoint.lon != 0){
+		if(activity->_activityPoints.size() > 1){
 			plusAfstand = activity->getDistance(activity->_lastActivityPoint.lon, activity->_lastActivityPoint.lat, ap.lon, ap.lat, activity->_lastActivityPoint.ele, ap.ele);
+			if(activity->totalData.timer > 0) {
+        		activity->totalData.avgSpeed = (activity->totalData.distance / activity->totalData.timer) * 3.6;
+    		}
+			activity->totalCadance += ap.cadance;
+			activity->totalData.avgCadance = activity->totalCadance / activity->totalData.timer;
 		}
 		
 		activity->totalData.distance += plusAfstand;
 
 		activity->_lastActivityPoint = ap;
 		activity->uiNeedsUpdate = true;
+		uint32_t statsTime = millis() - startTime;
+
+		log_e("dataWrite: %d ms, Stats: %d ms\n", dataWrite, statsTime);
 	}
 }
 
@@ -65,7 +76,8 @@ float Activity::getDistance(float lon1, float lat1, float lon2, float lat2, floa
 
 bool Activity::addActivityPoint(const ActivityPoint& point){
     _activityPoints.push_back(point);
-    return writeGpxData(point);
+    // Buffer in memory instead of writing every second
+    return true;
 }
 
 std::vector<Activity::ActivityPoint>& Activity::getActivityPoints(){
@@ -160,6 +172,9 @@ bool Activity::stopActivity(){
 	} else {
 		isStarted = false;
 		lv_timer_delete(activityTimer);
+		for(const auto& point : _activityPoints) {
+            writeGpxData(point);
+        }
 		return true;
 	}
 }

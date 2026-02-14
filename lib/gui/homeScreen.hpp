@@ -33,7 +33,7 @@ extern lv_obj_t *bluetoothButton;
 extern lv_obj_t *moreSettingsButton;
 
 // knoppen voor optionsScreen
-extern lv_obj_t *brightnessOptionBtn;
+extern lv_obj_t *brightnessSlider;
 extern lv_obj_t *mapOptionBtn;
 extern lv_obj_t *activityOptionBtn;
 extern lv_obj_t *touchscreenOptionBtn;
@@ -48,10 +48,11 @@ void accountBtnEvent(lv_event_t * e);
 void bluetoothBtnEvent(lv_event_t * e);
 void moreSettingsBtnEvent(lv_event_t * e);
 
-void brightnessOptionBtnEvent(lv_event_t * e);
 void mapOptionBtnEvent(lv_event_t * e);
 void activityOptionBtnEvent(lv_event_t * e);
 void touchscreenOptionBtnEvent(lv_event_t * e);
+
+void changeBrightnessEvent(lv_event_t *e);
 
 void roadActBtnEvent(lv_event_t * e);
 

@@ -87,6 +87,8 @@ class Activity{
 
         ActivityPoint _lastActivityPoint;
 
+        size_t totalCadance = 0;
+
         lv_timer_t *activityTimer;
 
         bool createActivityFile();

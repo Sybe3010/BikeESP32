@@ -25,6 +25,8 @@ void initTFT()
   tft.initDMA(); // Zet direct memory access aan voor snellere scherm updates
   tft.fillScreen(TFT_BLACK);
 
+  tft.setBrightness(255);
+
    // Touchscreen kalibreren
   uint16_t calData[8];
   uint8_t calDataOK = 0;

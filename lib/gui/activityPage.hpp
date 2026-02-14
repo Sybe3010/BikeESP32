@@ -14,7 +14,6 @@ extern lv_obj_t *activityPageTileView;
 extern lv_obj_t *activityPageMapTile;
 extern lv_obj_t *activityPageDataTile; // geeft de huidige data weer
 extern lv_obj_t *activityPageStatsTile; // geeft de statistieken weer: totale afstand, gemiddelde snelheid, max snelheid, totale klimming
-extern lv_obj_t *activityPageQuickSettingsTile; // geeft snelkoppelingen naar instellingen
 extern lv_obj_t *activityPageClimbView; // geeft een grafiek weer van de beklimming
 
 extern lv_obj_t *mapWidget;
@@ -30,11 +29,6 @@ extern lv_obj_t *statsWidget1;
 extern lv_obj_t *statsWidget2;
 extern lv_obj_t *statsWidget3;
 extern lv_obj_t *statsWidget4;
-
-extern lv_obj_t *quickSettingWidget1;
-extern lv_obj_t *quickSettingWidget2;
-extern lv_obj_t *quickSettingWidget3;
-extern lv_obj_t *quickSettingWidget4;
 
 extern lv_obj_t *climbViewWidget1;
 extern lv_obj_t *climbViewWidget2;
@@ -54,7 +48,6 @@ void createActivityPage();
 void createMapTile();
 void createDataTile();
 void createStatsTile();
-void createQuickSettingsTile();
 void createClimbViewTile();
 void createBrowseButtons();
 

@@ -12,7 +12,6 @@ lv_obj_t *activityPageTileView;
 lv_obj_t *activityPageMapTile;
 lv_obj_t *activityPageDataTile; // geeft de huidige data weer
 lv_obj_t *activityPageStatsTile; // geeft de statistieken weer: totale afstand, gemiddelde snelheid, max snelheid, totale klimming
-lv_obj_t *activityPageQuickSettingsTile; // geeft snelkoppelingen naar instellingen
 lv_obj_t *activityPageClimbView; // geeft een grafiek weer van de beklimming
 
 lv_obj_t *mapWidget;
@@ -28,11 +27,6 @@ lv_obj_t *statsWidget1;
 lv_obj_t *statsWidget2;
 lv_obj_t *statsWidget3;
 lv_obj_t *statsWidget4;
-
-lv_obj_t *quickSettingWidget1;
-lv_obj_t *quickSettingWidget2;
-lv_obj_t *quickSettingWidget3;
-lv_obj_t *quickSettingWidget4;
 
 lv_obj_t *climbViewWidget1;
 lv_obj_t *climbViewWidget2;
@@ -59,7 +53,6 @@ void createActivityPage(){
     activityPageMapTile = lv_tileview_add_tile(activityPageTileView, 0, 1, (lv_dir_t)(LV_DIR_RIGHT | LV_DIR_BOTTOM | LV_DIR_TOP));
     activityPageDataTile = lv_tileview_add_tile(activityPageTileView, 1, 1, (lv_dir_t)(LV_DIR_LEFT | LV_DIR_RIGHT));
     activityPageStatsTile = lv_tileview_add_tile(activityPageTileView, 2, 1, LV_DIR_LEFT);
-    activityPageQuickSettingsTile = lv_tileview_add_tile(activityPageTileView, 0, 0, LV_DIR_BOTTOM);
     activityPageClimbView = lv_tileview_add_tile(activityPageTileView, 0, 2, LV_DIR_TOP);
 
     lv_tileview_set_tile(activityPageTileView, activityPageMapTile, LV_ANIM_OFF);
@@ -67,7 +60,6 @@ void createActivityPage(){
     createMapTile();
     createDataTile();
     createStatsTile();
-    createQuickSettingsTile();
     createClimbViewTile();
 
     createBrowseButtons();
@@ -205,35 +197,7 @@ void createStatsTile(){
     lv_label_set_text(statWidget4Value, "Value 4");
     lv_obj_set_pos(statWidget4Value, 10, 30);
 }
-void createQuickSettingsTile(){
-    quickSettingWidget1 = lv_button_create(activityPageQuickSettingsTile);
-    lv_obj_set_size(quickSettingWidget1, 128, 115);
-    lv_obj_set_pos(quickSettingWidget1, 20, 32);
-    lv_obj_t *quickLabel1 = lv_label_create(quickSettingWidget1);
-    lv_label_set_text(quickLabel1, "Stop Activity");
-    lv_obj_add_event_cb(quickSettingWidget1,   activityPageController, LV_EVENT_ALL, NULL);
 
-    quickSettingWidget2 = lv_button_create(activityPageQuickSettingsTile);
-    lv_obj_set_size(quickSettingWidget2, 128, 115);
-    lv_obj_set_pos(quickSettingWidget2, 174, 32);
-    lv_obj_t *quickLabel2 = lv_label_create(quickSettingWidget2);
-    lv_label_set_text(quickLabel2, "Pas route aan");
-    lv_obj_add_event_cb(quickSettingWidget2,   activityPageController, LV_EVENT_ALL, NULL);
-
-    quickSettingWidget3 = lv_button_create(activityPageQuickSettingsTile);
-    lv_obj_set_size(quickSettingWidget3, 128, 115);
-    lv_obj_set_pos(quickSettingWidget3, 20, 182);
-    lv_obj_t *quicklabel3 = lv_label_create(quickSettingWidget3);
-    lv_label_set_text(quicklabel3, "Sensors");
-    lv_obj_add_event_cb(quickSettingWidget3,   activityPageController, LV_EVENT_ALL, NULL);
-
-    quickSettingWidget4 = lv_button_create(activityPageQuickSettingsTile);
-    lv_obj_set_size(quickSettingWidget4, 128, 115);
-    lv_obj_set_pos(quickSettingWidget4, 174, 182);
-    lv_obj_t *quicklabel4 = lv_label_create(quickSettingWidget4);
-    lv_label_set_text(quicklabel4, "Brightness");
-    lv_obj_add_event_cb(quickSettingWidget4,   activityPageController, LV_EVENT_ALL, NULL);
-}
 void createClimbViewTile(){
     climbGraph = lv_chart_create(activityPageClimbView);
     lv_obj_set_size(climbGraph, 300, 300);
@@ -276,7 +240,7 @@ void createBrowseButtons(){
     lv_obj_set_size(actMenuBtn, 90, 40);
     lv_obj_set_pos(actMenuBtn, 110, 420);
     lv_obj_t *menuLabel = lv_label_create(actMenuBtn);
-    lv_label_set_text(menuLabel, "Menu");
+    lv_label_set_text(menuLabel, "Stop");
     lv_obj_add_event_cb(actMenuBtn, activityPageController, LV_EVENT_ALL, NULL);
 
     browsePrevBtn = lv_button_create(activityPage);
@@ -321,7 +285,7 @@ void activityPageController(lv_event_t *e){
                 return;
             }
         } else if(target == actMenuBtn){
-            lv_tileview_set_tile(activityPageTileView, activityPageQuickSettingsTile, LV_ANIM_OFF);
+            lv_obj_send_event(activityPage, LV_EVENT_VALUE_CHANGED, NULL);
             return;
         }
     }
@@ -448,10 +412,6 @@ void activityPageController(lv_event_t *e){
 
 void activityUIUpdateTimer(lv_timer_t* timer){
     lv_obj_t* activeTile = lv_tileview_get_tile_active(activityPageTileView);
-
-    if(activeTile == activityPageQuickSettingsTile){
-        return;
-    }
 
     if(activeTile == activityPageMapTile){
         // Map updaten
