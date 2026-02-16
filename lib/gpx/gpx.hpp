@@ -24,35 +24,36 @@ static const char* gpxSrcElem PROGMEM     = "src";   /**< GPX source element. */
 
 class GpxParser {
     public:
-        GpxParser() {}
-        GpxParser(const char* filePath);
+        GpxParser() {} /// Default constructor
+        GpxParser(const char* filePath); /// constructor met een file pad, dit voor het inladen van een specifiek gpx bestand
         ~GpxParser();
 
+        // functie die alle gpx bestanden in een map ophaalt en de bestandsnamen teruggeeft in een vector
         static std::map<std::string, std::vector<std::string>> getTagElementList(const char* tag, const char* element, const std::string& folderPath);
 
-        bool loadTrack();
-        bool getWaypoints();
-        bool getDefaultWaypoints();
+        bool loadTrack(); // Laad het gpx bestand en parse de data
+        bool getWaypoints(); // Haal de waypoints op uit het gpx bestand
+        bool getDefaultWaypoints(); // Haal de default waypoints op uit het gpx bestand
 
-        float trackLenght;
-        float totalAscent;
-        float totalDescent;
+        float trackLenght; // Lengte van het track in meters
+        float totalAscent; // Totaal stijgen in meters
+        float totalDescent; // Totaal dalen in meters
         
-        std::vector<wayPoint> trackData;
+        std::vector<wayPoint> trackData; // Bevat alle trackpoints van het gpx bestand
         
-        std::vector<wayPoint> defaultWaypoints;
+        std::vector<wayPoint> defaultWaypoints; // Bevat de default waypoints van het gpx bestand
 
-        std::vector<elevationData> elevationProfile;
-        std::vector<ClimbSegment> climbs;
+        std::vector<elevationData> elevationProfile; // Bevat het elevatieprofiel van het track
+        std::vector<ClimbSegment> climbs; // Bevat alle klimsegmenten van het track
 
     private:
-        void getElevationProfile();
-        void detectClimbs();
-        void getTrackLenght();
-        float getDistance(float lon1, float lat1, float lon2, float lat2, float h1, float h2);
+        void getElevationProfile(); // Genereer het elevatieprofiel van het track
+        void detectClimbs(); // Detecteer klimsegmenten in het track
+        void getTrackLenght(); // Bereken de lengte van het track
+        float getDistance(float lon1, float lat1, float lon2, float lat2, float h1, float h2); // Haversine formule om afstand te berekenen tussen twee GPS punten
         
         //Voor climbdetails leg climbs en elvationProfile over elkaar.
-        
-        std::string _filePath;
+    
+        std::string _filePath; // Pad naar het gpx bestand
         
 };

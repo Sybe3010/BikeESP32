@@ -75,6 +75,7 @@ void makeGpxDetailsScreen(){
     routeStartButton = lv_button_create(gpxDetailsScreen);
     lv_obj_set_size(routeStartButton, 120, 70);
     lv_obj_set_pos(routeStartButton, 180, 375);
+    //lv_obj_add_event_cb(routeStartButton, startRouteEvent, LV_EVENT_CLICKED, NULL);
 
     //Labels
     routeLenghtLabel = lv_label_create(routeLenghtBox);
@@ -89,13 +90,16 @@ void fillGpxDetailsScreen(){
 
     details.loadTrack();
     lv_label_set_text_fmt(routeLenghtLabel, "Lenght: %.1f km", details.trackLenght / 1000);
-    lv_label_set_text_fmt(routeAscentLabel, "Ascent: %d m", details.totalAscent);
+    lv_label_set_text_fmt(routeAscentLabel, "Ascent: %.1f m", details.totalAscent);
     
+    lv_obj_add_flag(routeElevationChart, LV_OBJ_FLAG_SEND_DRAW_TASK_EVENTS);
     lv_chart_set_point_count(routeElevationChart, details.elevationProfile.size());
     uint32_t i;
     for(i = 0; i < details.elevationProfile.size(); i++) {
         lv_chart_set_next_value(routeElevationChart, elevationSerie, details.elevationProfile[i].elevation);
     }
+
+    maps.displayGpxRoute(details.trackData);
 }
 
 void drawElevationChartEvent(lv_event_t *e){

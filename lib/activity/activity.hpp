@@ -9,8 +9,14 @@
 #include <sstream>
 #include "tinyxml2.h"
 #include "storage.hpp"
+#include "globalGuiDef.h"
+#include "bluetooth.hpp"
+#include "gps.hpp"
+#include "activity.hpp"
 
 extern Storage storage;
+extern GPS gps;
+extern Bluetooth bleSensors;
 
 static const char* gpxTrkHeader PROGMEM = { "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 					  "<gpx\n"
@@ -40,6 +46,7 @@ static const char* AgpxTrackPointExtensionTag PROGMEM = "ns3:TrackPointExtension
 static const char* AgpxHrElem PROGMEM = "ns3:hr"; /**< GPX temperature element. */
 static const char* AgpxPowerElem PROGMEM = "ns3:power";
 
+
 class Activity{
     public:
         struct ActivityPoint{
@@ -53,13 +60,14 @@ class Activity{
         };
 
         struct ActivityData{
-            int timer;
-            int distance;
-            int avgSpeed;
+            uint32_t timer;
+            float distance;
+            float avgSpeed;
             int avgCadance;
             int avgHR;
             int avgPower;
         };
+        bool uiNeedsUpdate = false;
 
         Activity();
         Activity(const char* filePath);
@@ -71,12 +79,15 @@ class Activity{
         std::vector<ActivityPoint>& getActivityPoints();
 
         ActivityData getActivityData();
+
+        bool stopActivity();
     private:
         std::string _activityFilePath;
         std::vector<ActivityPoint> _activityPoints;
         ActivityData totalData;
         bool isStarted = false;
 
+        static void ActivityTimer(void *arg);
         bool createActivityFile();
         bool writeGpxData(const ActivityPoint& ap);
         void calculateActivityData();

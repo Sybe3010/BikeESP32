@@ -14,7 +14,7 @@ lv_timer_t *mapUpdateTimer;
 int zoom = 15;
 
 void zoomOutMapScr(lv_event_t *e){
-    if(zoom > 1){
+    if(zoom > 7){
         zoom--;
     }
     updateMapCanvas();
@@ -104,7 +104,7 @@ static void updateMapCanvas() {
 
     if(maps.redrawMap){
         maps.displayMap();
-        // Byte swap toepassen op de RGB565 buffer
+        // Byte swap toepassen op de RGB565 buffer voor juiste kleurweergave
         lv_draw_sw_rgb565_swap(maps.mapBuffer, 320 * 455);
 
         // Buffer instellen op canvas

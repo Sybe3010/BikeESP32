@@ -1,9 +1,9 @@
 /**
  * @file storage.cpp
- * @author Jordi Gauchía (jgauchia@jgauchia.com)
- * @brief  Storage definition and functions
+ * @author Jordi Gauchía (jgauchia@jgauchia.com) / Sybe Van den Bergh
+ * @brief  Storage definition and functions / + aanpassingen voor de ongebruikte functies zodat de footprint van deze file kleiner is.
  * @version 0.2.3
- * @date 2025-11
+ * @date 2025-12
  */
 
 #include "storage.hpp"
@@ -16,11 +16,6 @@
 #include <iomanip>
 
 #define SD_OCR_SDHC_CAP (1 << 30) /**< SD card SDHC capacity flag */
-
-extern const uint8_t SD_CS;   /**< Chip Select pin for SD card */
-extern const uint8_t SD_MISO; /**< MISO pin for SD card */
-extern const uint8_t SD_MOSI; /**< MOSI pin for SD card */
-extern const uint8_t SD_CLK;  /**< Clock pin for SD card */
 
 static const char *TAG = "Storage";
 

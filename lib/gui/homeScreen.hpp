@@ -1,7 +1,9 @@
 #pragma once
 
-#include "globalGuiDef.h"
+#include "bluetoothScreen.hpp"
 #include "mapScreen.hpp"
+
+extern std::string typeActivity;
 
 // Hoofd scherm tiles
 extern lv_obj_t *homeTile;
