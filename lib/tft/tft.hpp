@@ -3,6 +3,7 @@
 #include <Arduino.h>
 
 #include "display.hpp"
+#include "storage.hpp"
 #include <lvgl.h>
 #include <LGFX_TFT_eSPI.hpp>
 #include "storage.hpp"

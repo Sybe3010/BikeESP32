@@ -45,6 +45,7 @@ static const char* AgpxTrackPointExtensionTag PROGMEM = "ns3:TrackPointExtension
 static const char* AgpxHrElem PROGMEM = "ns3:hr"; /**< GPX temperature element. */
 static const char* AgpxPowerElem PROGMEM = "ns3:power";
 
+
 class Activity{
     public:
         struct ActivityPoint{

@@ -2,6 +2,8 @@
 
 TFT_eSPI tft = TFT_eSPI(); // maak een nieuw TFT_eSPI object aan
 
+extern Storage storage; 
+
 uint16_t TFT_WIDTH = 0;
 uint16_t TFT_HEIGHT = 0;
 
@@ -76,6 +78,10 @@ void IRAM_ATTR displayFlush(lv_display_t *disp, const lv_area_t *area, uint8_t *
   tft.setSwapBytes(true);
   tft.setAddrWindow(area->x1, area->y1, w, h);
   tft.pushImageDMA(area->x1, area->y1, area->x2 - area->x1 + 1, area->y2 - area->y1 + 1, (uint16_t*)px_map);
+  
+  // Wacht tot DMA transfer klaar is
+  tft.waitDMA();
+  
   tft.setSwapBytes(false);
 
   lv_display_flush_ready(disp);
@@ -116,7 +122,7 @@ void initLVGL()
   // Maak een display aan voor LVGL
   display = lv_display_create(TFT_WIDTH, TFT_HEIGHT);
   lv_display_set_flush_cb(display, displayFlush);
-  lv_display_set_flush_wait_cb(display, NULL);
+  lv_display_set_flush_wait_cb(display, [](lv_display_t *disp){ tft.waitDMA(); });
 
   size_t DRAW_BUF_SIZE = 0;
   DRAW_BUF_SIZE = TFT_WIDTH * TFT_HEIGHT * sizeof(lv_color_t);
