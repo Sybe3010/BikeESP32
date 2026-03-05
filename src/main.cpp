@@ -18,10 +18,14 @@
 #include "activityHomePage.hpp"
 #include "activityPage.hpp"
 
+#include "phoneController.hpp"
+
 extern GPS gps; // Gebruik het GPS object dat al is aangemaakt
 extern Maps maps; // Gebruik het Maps object dat al is aangemaakt
 extern Storage storage; // Gebruik het Storage object dat al is aangemaakt
 extern Bluetooth bleSensors;  // Gebruik het Bluetooth object dat al is aangemaakt
+
+phoneController phoneControl; // Maak een instance van de phoneController aan
 
 
 void setup() {
@@ -70,6 +74,8 @@ void setup() {
 
   //bleSensors.startScan();
   //bleSensors.connectToDevice(bleSensors.targetDevice);
+
+  phoneControl.init();
 }
 
 void loop() {
