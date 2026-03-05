@@ -36,8 +36,12 @@ lv_obj_t *browseNextBtn;
 lv_obj_t *browsePrevBtn;
 lv_obj_t *actMenuBtn;
 
+lv_obj_t *ActivityZoomInBtn;
+lv_obj_t *ActivityZoomOutBtn;
+
 lv_chart_series_t * elevationSerieAct;
 
+int currentZoomLevel = 15;
 bool activityStarted = false;
 bool trackLoaded = false;
 bool climbViewActive = true;
@@ -97,7 +101,21 @@ void createMapTile(){
     lv_label_set_text(mapWidget2Value, "Value 1");
     lv_obj_set_pos(mapWidget2Value, 10, 30);
 
+    ActivityZoomInBtn = lv_button_create(activityPageMapTile);
+    lv_obj_set_size(ActivityZoomInBtn, 40, 40);
+    lv_obj_set_pos(ActivityZoomInBtn, 270, 400);
+    lv_obj_t *zoomInLabel = lv_label_create(ActivityZoomInBtn);
+    lv_label_set_text(zoomInLabel, "+");
+    lv_obj_add_event_cb(ActivityZoomInBtn,   activityPageController, LV_EVENT_ALL, NULL);
+
+    ActivityZoomOutBtn = lv_button_create(activityPageMapTile);
+    lv_obj_set_size(ActivityZoomOutBtn, 40, 40);
+    lv_obj_set_pos(ActivityZoomOutBtn, 220, 400);
+    lv_obj_t *zoomOutLabel = lv_label_create(ActivityZoomOutBtn);
+    lv_label_set_text(zoomOutLabel, "-");
+    lv_obj_add_event_cb(ActivityZoomOutBtn,   activityPageController, LV_EVENT_ALL, NULL);
 }
+
 void createDataTile(){
     dataWidget1 = lv_obj_create(activityPageDataTile);
     lv_obj_set_size(dataWidget1, 128, 115);
@@ -265,6 +283,16 @@ void activityPageController(lv_event_t *e){
 
     if(code == LV_EVENT_CLICKED){
         if(activeTileController == NULL) return;
+
+        if(target == ActivityZoomInBtn && currentZoomLevel < 17){
+            currentZoomLevel++;
+            return;
+        }
+
+        if(target == ActivityZoomOutBtn && currentZoomLevel > 7){
+            currentZoomLevel--;
+            return;
+        }
         
         if(target == browseNextBtn){
             if(activeTileController == activityPageMapTile){
@@ -415,7 +443,7 @@ void activityUIUpdateTimer(lv_timer_t* timer){
 
     if(activeTile == activityPageMapTile){
         // Map updaten
-        activityMap.generateMap(15);
+        activityMap.generateMap(currentZoomLevel);
         if(activityTrack != nullptr){
             activityMap.displayGpxRoute(activityTrack->trackData);
         }
@@ -429,6 +457,8 @@ void activityUIUpdateTimer(lv_timer_t* timer){
 
         lv_obj_send_event(mapDataWidget1, LV_EVENT_REFRESH, NULL);
         lv_obj_send_event(mapDataWidget2, LV_EVENT_REFRESH, NULL);
+
+
         return;
     }
 

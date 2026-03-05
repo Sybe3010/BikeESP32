@@ -13,9 +13,21 @@ void gpxListButtonEvent(lv_event_t *e){
     lv_screen_load(gpxListScreen);
 }
 
+void navigationMenuScreenEvent(lv_event_t *e) {
+    lv_event_code_t code = lv_event_get_code(e);
+    
+    if(code == LV_EVENT_GESTURE){
+        lv_dir_t direction =  lv_indev_get_gesture_dir(lv_indev_active());
+        if(direction = LV_DIR_LEFT){
+            lv_screen_load(homeScreen);
+        }
+    }
+}
+
 void makeNavigationMenuScreen() {
     navigationMenuScreen = lv_obj_create(NULL);
     lv_obj_clear_flag(navigationMenuScreen, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_add_event_cb(navigationMenuScreen, navigationMenuScreenEvent, LV_EVENT_ALL, NULL);
 
     // buttons
     mapButton = lv_button_create(navigationMenuScreen);
