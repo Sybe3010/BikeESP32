@@ -103,14 +103,14 @@ void createMapTile(){
 
     ActivityZoomInBtn = lv_button_create(activityPageMapTile);
     lv_obj_set_size(ActivityZoomInBtn, 40, 40);
-    lv_obj_set_pos(ActivityZoomInBtn, 270, 400);
+    lv_obj_set_pos(ActivityZoomInBtn, 10, 380);
     lv_obj_t *zoomInLabel = lv_label_create(ActivityZoomInBtn);
     lv_label_set_text(zoomInLabel, "+");
     lv_obj_add_event_cb(ActivityZoomInBtn,   activityPageController, LV_EVENT_ALL, NULL);
 
     ActivityZoomOutBtn = lv_button_create(activityPageMapTile);
     lv_obj_set_size(ActivityZoomOutBtn, 40, 40);
-    lv_obj_set_pos(ActivityZoomOutBtn, 220, 400);
+    lv_obj_set_pos(ActivityZoomOutBtn, 10, 340);
     lv_obj_t *zoomOutLabel = lv_label_create(ActivityZoomOutBtn);
     lv_label_set_text(zoomOutLabel, "-");
     lv_obj_add_event_cb(ActivityZoomOutBtn,   activityPageController, LV_EVENT_ALL, NULL);

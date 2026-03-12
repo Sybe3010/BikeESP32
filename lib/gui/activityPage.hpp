@@ -38,8 +38,8 @@ extern lv_obj_t *browseNextBtn;
 extern lv_obj_t *browsePrevBtn;
 extern lv_obj_t *actMenuBtn;
 
-lv_obj_t *ActivityZoomInBtn;
-lv_obj_t *ActivityZoomOutBtn;
+extern lv_obj_t *ActivityZoomInBtn;
+extern lv_obj_t *ActivityZoomOutBtn;
 
 extern lv_timer_t* activityUITimer;
 
