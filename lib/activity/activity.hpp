@@ -13,6 +13,7 @@
 #include "gps.hpp"
 #include <lvgl.h>
 
+
 extern Storage storage;
 extern GPS gps;
 extern Bluetooth bleSensors;
@@ -98,6 +99,7 @@ class Activity{
         float getDistance(float lon1, float lat1, float lon2, float lat2, float h1, float h2); // Haversine formule om afstand te berekenen tussen twee GPS punten
 
         static void activityTimerUpdate(lv_timer_t *t);
+
 
         std::string formatFloat(float value, int precision);
 };

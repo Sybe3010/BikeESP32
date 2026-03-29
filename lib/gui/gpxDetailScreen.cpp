@@ -56,7 +56,6 @@ void makeGpxDetailsScreen(){
     lv_obj_remove_flag(routeElevationProfileCanvas, LV_OBJ_FLAG_SCROLLABLE);
 
 
-
     routeElevationChart = lv_chart_create(routeElevationProfileCanvas);
     lv_obj_set_size(routeElevationChart, 300, 80);
     lv_obj_set_pos(routeElevationChart, 10, 10);
@@ -71,10 +70,14 @@ void makeGpxDetailsScreen(){
     moreDetailsButton = lv_button_create(gpxDetailsScreen);
     lv_obj_set_size(moreDetailsButton, 120, 70);
     lv_obj_set_pos(moreDetailsButton, 20, 375);
+    lv_obj_t* moreDetailsLabel = lv_label_create(moreDetailsButton);
+    lv_label_set_text(moreDetailsLabel, "Delete");
 
     routeStartButton = lv_button_create(gpxDetailsScreen);
     lv_obj_set_size(routeStartButton, 120, 70);
     lv_obj_set_pos(routeStartButton, 180, 375);
+    lv_obj_t* startRouteLabel = lv_label_create(routeStartButton);
+    lv_label_set_text(startRouteLabel, "Upload to Cloud");
     //lv_obj_add_event_cb(routeStartButton, startRouteEvent, LV_EVENT_CLICKED, NULL);
 
     //Labels

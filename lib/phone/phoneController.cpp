@@ -50,7 +50,7 @@ void phoneController::changeDeviceConnectedBool(bool newVal) {
         connectionStateChar.notify();
     } else {
         _connectionState = IDLE;
-        // Stop WiFi als disconnect gebeurt
+        // Stop WiFi als disconnect gebeurd
         if (wifiActive) {
             log_e("Device disconnected, stopping wifi...");
             stopWifi();

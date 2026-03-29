@@ -29,7 +29,7 @@ void initTFT()
 
   tft.setBrightness(255);
 
-   // Touchscreen kalibreren
+  // Touchscreen kalibreren
   uint16_t calData[8];
   uint8_t calDataOK = 0;
 

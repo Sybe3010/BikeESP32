@@ -67,6 +67,7 @@ void makeActivityHomePage(){
     lv_obj_t *activityStartLabel = lv_label_create(activityHomeMainBox);
     lv_obj_set_pos(activityStartLabel, 14, 11);
     lv_obj_set_style_text_font(activityStartLabel, &lv_font_montserrat_26, 0);
+    lv_label_set_text(activityStartLabel, "Start");
 
     /// Routes button
     activityHomeRoute = lv_button_create(activityHomeScreen);
@@ -97,13 +98,6 @@ void makeActivityHomePage(){
     lv_label_set_text(activityOptionsLabel, "Options");
 
     lv_obj_add_event_cb(activityHomeScreen, updateActivityHomePage, LV_EVENT_VALUE_CHANGED, NULL);
-
-    lv_timer_t* testBLEtimer = lv_timer_create(updateBLeTest, 1000, NULL);
-    lv_timer_ready(gpsTimer);
-}
-
-void updateBLeTest(lv_timer_t * t){
-    lv_label_set_text(activityHomeTitel, String(bleSensors.hrValue).c_str());
 }
 
 void actHomeSetRoute(lv_event_t* e){

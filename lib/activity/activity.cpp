@@ -8,7 +8,10 @@ bool Activity::startActivity(){
     if(isStarted){
         return true;
     } else {
+
         createActivityFile();
+
+		// createFitFile();
 		activityTimer = lv_timer_create(activityTimerUpdate, 1000, this);
 		isStarted = true;
 		_lastActivityPoint.lat = 0;
@@ -31,6 +34,8 @@ void Activity::activityTimerUpdate(lv_timer_t *t){
 		ap.hartrate = bleSensors.hrValue;
 		ap.power = 0;
 		activity->addActivityPoint(ap);
+
+		// bool gelukt = activity->writeFitData();
 
 		uint32_t dataWrite = millis() - startTime;
 
@@ -175,6 +180,7 @@ bool Activity::stopActivity(){
 		for(const auto& point : _activityPoints) {
             writeGpxData(point);
         }
+		
 		return true;
 	}
 }
