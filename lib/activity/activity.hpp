@@ -14,6 +14,16 @@
 #include <lvgl.h>
 
 
+// #include "fit.h"
+// #include "fit_product.h"
+// #include "fit_crc.h"
+
+// // 2 * PI (3.14159265)
+// #define TWOPI 6.2831853
+
+// // Number of semicircles per meter at the equator
+// #define SC_PER_M 107.173
+
 extern Storage storage;
 extern GPS gps;
 extern Bluetooth bleSensors;
@@ -102,4 +112,20 @@ class Activity{
 
 
         std::string formatFloat(float value, int precision);
+
+        // FIT_DATE_TIME timestamp;
+        // FIT_DATE_TIME start_time;
+        // FILE *activityFile;
+        // static FIT_UINT16 data_crc;
+
+        // bool generateFitFile();
+        // bool writeFitHeader(FILE *file);
+        // bool writeFitData(const ActivityPoint& ap);
+        // bool writeFitFooter();
+
+        // void WriteMessageDefinition(FIT_UINT8 local_mesg_number, const void *mesg_def_pointer, FIT_UINT16 mesg_def_size, FILE *fp);
+        // void WriteMessageDefinitionWithDevFields(FIT_UINT8 local_mesg_number, const void *mesg_def_pointer, FIT_UINT8 mesg_def_size, FIT_UINT8 number_dev_fields, FIT_DEV_FIELD_DEF *dev_field_definitions, FILE *fp);
+        // void WriteMessage(FIT_UINT8 local_mesg_number, const void *mesg_pointer, FIT_UINT16 mesg_size, FILE *fp);
+        // void WriteDeveloperField(const void* data, FIT_UINT16 data_size, FILE *fp);
+        // void WriteData(const void *data, FIT_UINT16 data_size, FILE *fp);
 };

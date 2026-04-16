@@ -72,13 +72,14 @@ void makeGpxDetailsScreen(){
     lv_obj_set_pos(moreDetailsButton, 20, 375);
     lv_obj_t* moreDetailsLabel = lv_label_create(moreDetailsButton);
     lv_label_set_text(moreDetailsLabel, "Delete");
+    lv_obj_add_event_cb(moreDetailsButton, deleteGpxEvent, LV_EVENT_CLICKED, NULL);
 
     routeStartButton = lv_button_create(gpxDetailsScreen);
     lv_obj_set_size(routeStartButton, 120, 70);
     lv_obj_set_pos(routeStartButton, 180, 375);
     lv_obj_t* startRouteLabel = lv_label_create(routeStartButton);
     lv_label_set_text(startRouteLabel, "Upload to Cloud");
-    //lv_obj_add_event_cb(routeStartButton, startRouteEvent, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(routeStartButton, uploadToCloudEvent, LV_EVENT_CLICKED, NULL);
 
     //Labels
     routeLenghtLabel = lv_label_create(routeLenghtBox);
@@ -103,6 +104,16 @@ void fillGpxDetailsScreen(){
     }
 
     activityMap.displayGpxRoute(details.trackData);
+}
+
+void deleteGpxEvent(lv_event_t *e){
+    // if (gpxFileFolder.length() > 0) {
+    //     storage.remove(gpxFileFolder.c_str());
+    //     lv_screen_load(gpxListScreen);
+    // }
+}
+void uploadToCloudEvent(lv_event_t *e){
+    supabase.uploadGpxFile(gpxFileFolder.c_str());
 }
 
 void drawElevationChartEvent(lv_event_t *e){

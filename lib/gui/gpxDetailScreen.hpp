@@ -5,8 +5,11 @@
 #include "gpx.hpp"
 #include "maps.hpp"
 
+#include "supabaseController.hpp"
+
 extern Maps maps;
 extern Maps activityMap;
+extern SupabaseController supabase;
 
 extern lv_obj_t *routePreviewCanvas;
 extern lv_obj_t *gpxDetailsScreenBackButton;
@@ -32,4 +35,6 @@ void startRouteEvent(lv_event_t *e);
 void drawElevationChartEvent(lv_event_t *e);
 void add_faded_area(lv_event_t * e);
 void gpxDetailsBackButtonEvent(lv_event_t *e);
+void deleteGpxEvent(lv_event_t *e);
+void uploadToCloudEvent(lv_event_t *e);
 
