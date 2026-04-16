@@ -4,6 +4,7 @@
 #include "globalGuiDef.h"
 #include "bluetooth.hpp"
 #include "activity.hpp"
+#include "activitySensorsPage.hpp"
 #include <chrono>
 
 extern Bluetooth bleSensors;
@@ -18,3 +19,6 @@ void makeActivityHomePage();
 void updateActivityHomePage(lv_event_t* e);
 
 void actHomeSetRoute(lv_event_t* e);
+void updateBLeTest(lv_timer_t * t);
+
+void goToActivityBlePage(lv_event_t *e);

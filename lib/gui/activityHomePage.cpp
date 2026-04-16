@@ -87,6 +87,7 @@ void makeActivityHomePage(){
     lv_obj_set_pos(activitySensorsLabel, 14, 11);
     lv_obj_set_style_text_font(activitySensorsLabel, &lv_font_montserrat_26, 0);
     lv_label_set_text(activitySensorsLabel, "Sensors");
+    lv_obj_add_event_cb(activityHomeSensors, goToActivityBlePage, LV_EVENT_CLICKED, NULL);
 
     /// Options button
     activityHomeOpties = lv_button_create(activityHomeScreen);
@@ -104,6 +105,14 @@ void actHomeSetRoute(lv_event_t* e){
     log_e("actHomescreen pointer: %p", activityHomeScreen);
     lv_obj_send_event(gpxListScreen, LV_EVENT_REFRESH, activityHomeScreen);
     lv_screen_load(gpxListScreen);
+} 
+void goToActivityBlePage(lv_event_t *e){
+    updateBleActivityScreen();
+    lv_screen_load(bleActivityScreen);
+}
+
+void updateBLeTest(lv_timer_t * t){
+    lv_label_set_text(activityHomeTitel, String(bleSensors.hrValue).c_str());
 }
 
 void updateActivityHomePage(lv_event_t* e){

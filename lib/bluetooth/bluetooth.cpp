@@ -121,6 +121,7 @@ void Bluetooth::connectToDevice(BLEAdvertisedDevice* advertisedDevice){
     
     clients.push_back(newClient);
     auto &client = clients.back();
+    client.targetDevice = advertisedDevice;
 
     // Heart rate notify
     if(auto hr = client._client->getService(HRServiceUUID)) {

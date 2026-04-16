@@ -48,6 +48,8 @@ class GpxParser {
         std::vector<elevationData> elevationProfile; // Bevat het elevatieprofiel van het track
         std::vector<ClimbSegment> climbs; // Bevat alle klimsegmenten van het track
 
+        std::string _filePath; // Pad naar het gpx bestand
+
     private:
         void getElevationProfile(); // Genereer het elevatieprofiel van het track
         void detectClimbs(); // Detecteer klimsegmenten in het track
@@ -55,7 +57,4 @@ class GpxParser {
         float getDistance(float lon1, float lat1, float lon2, float lat2, float h1, float h2); // Haversine formule om afstand te berekenen tussen twee GPS punten
         
         //Voor climbdetails leg climbs en elvationProfile over elkaar.
-    
-        std::string _filePath; // Pad naar het gpx bestand
-        
 };

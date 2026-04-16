@@ -17,8 +17,10 @@
 #include "bluetoothScreen.hpp"
 #include "activityHomePage.hpp"
 #include "activityPage.hpp"
+#include "activitySensorsPage.hpp"
 
 #include "phoneController.hpp"
+#include "supabaseController.hpp"
 
 extern GPS gps; // Gebruik het GPS object dat al is aangemaakt
 extern Maps maps; // Gebruik het Maps object dat al is aangemaakt
@@ -26,6 +28,7 @@ extern Storage storage; // Gebruik het Storage object dat al is aangemaakt
 extern Bluetooth bleSensors;  // Gebruik het Bluetooth object dat al is aangemaakt
 
 phoneController phoneControl; // Maak een instance van de phoneController aan
+SupabaseController supabase; // Maak een instance van de SupabaseController aan
 
 
 void setup() {
@@ -64,6 +67,7 @@ void setup() {
   makeGpxDetailsScreen(); // maak het GPX detail scherm
   makeBleScreen(); // maak het Bluetooth scherm
   createActivityPage();
+  makeBleActivityScreen();
   
 
   lv_screen_load(homeScreen); // laad het homescreen
@@ -74,6 +78,7 @@ void setup() {
 
   //bleSensors.startScan();
   //bleSensors.connectToDevice(bleSensors.targetDevice);
+  supabase.initSupabase(); // initialiseer de Supabase verbinding
 
   phoneControl.init();
 }
