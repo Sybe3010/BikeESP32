@@ -92,6 +92,10 @@ void makeGpxDetailsScreen(){
 void fillGpxDetailsScreen(){
     GpxParser details = GpxParser(gpxFileFolder.c_str());
 
+    lv_obj_set_style_bg_color(moreDetailsButton, lv_palette_main(LV_PALETTE_BLUE), LV_PART_MAIN);
+    lv_obj_t *moreDetailsLabel = lv_obj_get_child(moreDetailsButton, 0);
+    lv_label_set_text(moreDetailsLabel, "Upload to Cloud");
+
     details.loadTrack();
     lv_label_set_text_fmt(routeLenghtLabel, "Lenght: %.1f km", details.trackLenght / 1000);
     lv_label_set_text_fmt(routeAscentLabel, "Ascent: %.1f m", details.totalAscent);
@@ -113,6 +117,12 @@ void deleteGpxEvent(lv_event_t *e){
     // }
 }
 void uploadToCloudEvent(lv_event_t *e){
+    if(supabase.isConnectedToWifi == false){
+        lv_obj_set_style_bg_color(moreDetailsButton, lv_palette_main(LV_PALETTE_RED), LV_PART_MAIN);
+        lv_obj_t *moreDetailsLabel = lv_obj_get_child(moreDetailsButton, 0);
+        lv_label_set_text(moreDetailsLabel, "No Wifi");
+        return;
+    }
     supabase.uploadGpxFile(gpxFileFolder.c_str());
 }
 

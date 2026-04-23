@@ -30,6 +30,10 @@ extern Bluetooth bleSensors;  // Gebruik het Bluetooth object dat al is aangemaa
 phoneController phoneControl; // Maak een instance van de phoneController aan
 SupabaseController supabase; // Maak een instance van de SupabaseController aan
 
+lv_timer_t *wifiTimer;
+
+
+void wifiConnectTimer(lv_timer_t *timer);
 
 void setup() {
   Serial.begin(9600); // start de seriele poort voor debugging
@@ -81,12 +85,33 @@ void setup() {
   supabase.initSupabase(); // initialiseer de Supabase verbinding
 
   phoneControl.init();
+
+  if(supabase.isConnectedToWifi == false){
+    wifiTimer = lv_timer_create(wifiConnectTimer, 5000, NULL);
+  }
+  supabase.updateWifi();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   lv_timer_handler(); // LVGL taak handler
   delay(1); // Kleine delay (1ms ipv 5ms) voor beter timing met LVGL tick
+
+  if(supabase.isConnectedToWifi == true){
+    if(wifiTimer != nullptr){
+      lv_timer_pause(wifiTimer);
+    }
+  } else {
+    if(wifiTimer == nullptr){
+      wifiTimer = lv_timer_create(wifiConnectTimer, 10000, NULL);
+    } else {
+      lv_timer_resume(wifiTimer);
+    }
+  }
+}
+
+void wifiConnectTimer(lv_timer_t *timer){
+  supabase.updateWifi();
 }
 
 
